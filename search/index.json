@@ -1,1 +1,1 @@
-[{"content":"","date":"2025-05-08T23:05:44+08:00","permalink":"https://Logic0528.github.io/p/handsomeboy/","title":"Handsomeboy"}]
+[{"content":"11 22 33\napiVersion: v1 kind: PersistentVolume metadata: name: example-pv spec: capacity: storage: 10Gi accessModes: - ReadWriteOnce hostPath: path: \u0026quot;/mnt/data\u0026quot; ","date":"2025-05-08T23:05:44+08:00","permalink":"https://Logic0528.github.io/p/handsomeboy/","title":"Handsomeboy"}]

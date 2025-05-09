@@ -13,7 +13,22 @@
         <pubDate>Thu, 08 May 2025 23:05:44 +0800</pubDate>
         
         <guid>https://Logic0528.github.io/p/handsomeboy/</guid>
-        <description></description>
+        <description>&lt;p&gt;&lt;strong&gt;11&lt;/strong&gt;
+22
+33&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;apiVersion: v1
+kind: PersistentVolume
+metadata:
+name: example-pv
+spec:
+capacity:
+    storage: 10Gi
+accessModes:
+    - ReadWriteOnce
+hostPath:
+    path: &amp;quot;/mnt/data&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+</description>
         </item>
         
     </channel>
