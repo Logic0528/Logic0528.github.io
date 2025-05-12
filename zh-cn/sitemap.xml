@@ -15,22 +15,8 @@
                 href="https://Logic0528.github.io/"
                 />
   </url><url>
-    <loc>https://Logic0528.github.io/p/k8s-%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%98%E5%82%A8-pv%E5%92%8Cpvc/</loc>
-    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
-  </url><url>
-    <loc>https://Logic0528.github.io/post/</loc>
-    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
-  </url><url>
-    <loc>https://Logic0528.github.io/p/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</loc>
-    <lastmod>2025-05-08T23:05:44+08:00</lastmod>
-  </url><url>
-    <loc>https://Logic0528.github.io/page/</loc>
-    <lastmod>2019-05-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://Logic0528.github.io/archives/</loc>
-    <lastmod>2019-05-28T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>https://Logic0528.github.io/categories/</loc>
+    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -42,7 +28,26 @@
                 href="https://Logic0528.github.io/categories/"
                 />
   </url><url>
+    <loc>https://Logic0528.github.io/tags/k8s/</loc>
+    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
+  </url><url>
+    <loc>https://Logic0528.github.io/p/k8s-%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%98%E5%82%A8-pv%E5%92%8Cpvc/</loc>
+    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
+  </url><url>
+    <loc>https://Logic0528.github.io/categories/kubernetes/</loc>
+    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
+  </url><url>
+    <loc>https://Logic0528.github.io/post/</loc>
+    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
+  </url><url>
+    <loc>https://Logic0528.github.io/tags/pv/</loc>
+    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
+  </url><url>
+    <loc>https://Logic0528.github.io/tags/pvc/</loc>
+    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
+  </url><url>
     <loc>https://Logic0528.github.io/tags/</loc>
+    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
@@ -53,6 +58,21 @@
                 hreflang="zh-cn"
                 href="https://Logic0528.github.io/tags/"
                 />
+  </url><url>
+    <loc>https://Logic0528.github.io/tags/%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%98%E5%82%A8/</loc>
+    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
+  </url><url>
+    <loc>https://Logic0528.github.io/categories/%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86/</loc>
+    <lastmod>2025-05-11T14:49:19+08:00</lastmod>
+  </url><url>
+    <loc>https://Logic0528.github.io/p/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</loc>
+    <lastmod>2025-05-08T23:05:44+08:00</lastmod>
+  </url><url>
+    <loc>https://Logic0528.github.io/page/</loc>
+    <lastmod>2019-05-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://Logic0528.github.io/archives/</loc>
+    <lastmod>2019-05-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://Logic0528.github.io/categories/test/</loc>
   </url><url>

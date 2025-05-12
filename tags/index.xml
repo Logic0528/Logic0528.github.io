@@ -6,6 +6,39 @@
         <description>Recent content in Tags on Logic</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
-        <copyright>Logic</copyright><atom:link href="https://Logic0528.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+        <copyright>Logic</copyright>
+        <lastBuildDate>Sun, 11 May 2025 14:49:19 +0800</lastBuildDate><atom:link href="https://Logic0528.github.io/tags/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>K8s</title>
+        <link>https://Logic0528.github.io/tags/k8s/</link>
+        <pubDate>Sun, 11 May 2025 14:49:19 +0800</pubDate>
+        
+        <guid>https://Logic0528.github.io/tags/k8s/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>PV</title>
+        <link>https://Logic0528.github.io/tags/pv/</link>
+        <pubDate>Sun, 11 May 2025 14:49:19 +0800</pubDate>
+        
+        <guid>https://Logic0528.github.io/tags/pv/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>PVC</title>
+        <link>https://Logic0528.github.io/tags/pvc/</link>
+        <pubDate>Sun, 11 May 2025 14:49:19 +0800</pubDate>
+        
+        <guid>https://Logic0528.github.io/tags/pvc/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>持久化存储</title>
+        <link>https://Logic0528.github.io/tags/%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%98%E5%82%A8/</link>
+        <pubDate>Sun, 11 May 2025 14:49:19 +0800</pubDate>
+        
+        <guid>https://Logic0528.github.io/tags/%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%98%E5%82%A8/</guid>
+        <description></description>
+        </item>
+        
     </channel>
 </rss>
