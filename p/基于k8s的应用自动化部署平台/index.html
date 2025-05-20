@@ -300,11 +300,29 @@
   <ol>
     <li><a href="#项目目录结构">项目目录结构</a>
       <ol>
-        <li>
+        <li><a href="#helm-chartsapp-template">helm-charts/app-template</a>
           <ol>
-            <li><a href="#helm-chartsapp-template">helm-charts/app-template</a></li>
-            <li><a href="#templatesingressyaml">templates/ingress.yaml</a></li>
-            <li><a href="#manifests">manifests</a></li>
+            <li><a href="#chartyaml">Chart.yaml</a></li>
+            <li><a href="#valuesyaml">values.yaml</a></li>
+            <li><a href="#templatesdeploymentyaml">templates/deployment.yaml</a></li>
+            <li><a href="#templatesserviceyaml">templates/service.yaml</a></li>
+          </ol>
+        </li>
+        <li><a href="#templatesingressyaml">templates/ingress.yaml</a></li>
+        <li><a href="#manifests">manifests</a>
+          <ol>
+            <li><a href="#applicationsapp-templateyaml">applications/app-template.yaml</a></li>
+            <li><a href="#loggingefk-valuesyaml">logging/efk-values.yaml</a></li>
+            <li><a href="#monitoringprometheus-rulesyaml">monitoring/prometheus-rules.yaml</a></li>
+            <li><a href="#monitoringprometheus-valuesyaml">monitoring/prometheus-values.yaml</a></li>
+            <li><a href="#monitoringstorageclassyaml">monitoring/storageclass.yaml</a></li>
+            <li><a href="#monitoringpvyaml">monitoring/pv.yaml</a></li>
+          </ol>
+        </li>
+        <li><a href="#scripts">scripts</a>
+          <ol>
+            <li><a href="#installsh">install.sh</a></li>
+            <li><a href="#deploysh">deploy.sh</a></li>
           </ol>
         </li>
       </ol>
@@ -437,9 +455,9 @@
 </span></span><span class="line"><span class="cl">    └── deploy.sh                  <span class="c1"># 部署脚本</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="helm-chartsapp-template">helm-charts/app-template
-</h4><h5 id="chartyaml">Chart.yaml
-</h5><div class="highlight"><div class="chroma">
+</div><h3 id="helm-chartsapp-template">helm-charts/app-template
+</h3><h4 id="chartyaml">Chart.yaml
+</h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
@@ -455,8 +473,8 @@
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">application</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><h5 id="valuesyaml">values.yaml
-</h5><div class="highlight"><div class="chroma">
+</div><h4 id="valuesyaml">values.yaml
+</h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -574,8 +592,8 @@ clusterIP让外部访问的方式：<br>
 </span></span><span class="line"><span class="cl">    C --&gt; D[Pod1]
 </span></span></code></pre></td></tr></table>
 </div>
-</div><h5 id="templatesdeploymentyaml">templates/deployment.yaml
-</h5><div class="highlight"><div class="chroma">
+</div><h4 id="templatesdeploymentyaml">templates/deployment.yaml
+</h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -636,8 +654,8 @@ clusterIP让外部访问的方式：<br>
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>deployment.yaml这样配置可以根据values.yaml中的配置动态生成deployment资源，相当于values.yaml定义变量，方便修改</p>
-<h5 id="templatesserviceyaml">templates/service.yaml
-</h5><div class="highlight"><div class="chroma">
+<h4 id="templatesserviceyaml">templates/service.yaml
+</h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -667,8 +685,8 @@ clusterIP让外部访问的方式：<br>
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span>{{<span class="w"> </span><span class="l">.Values.name }}</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="templatesingressyaml">templates/ingress.yaml
-</h4><div class="highlight"><div class="chroma">
+</div><h3 id="templatesingressyaml">templates/ingress.yaml
+</h3><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -712,9 +730,9 @@ clusterIP让外部访问的方式：<br>
 </span></span></span><span class="line"><span class="cl"><span class="w"></span>{{- <span class="l">end }}</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="manifests">manifests
-</h4><h5 id="applicationsapp-templateyaml">applications/app-template.yaml
-</h5><div class="highlight"><div class="chroma">
+</div><h3 id="manifests">manifests
+</h3><h4 id="applicationsapp-templateyaml">applications/app-template.yaml
+</h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -774,10 +792,10 @@ clusterIP让外部访问的方式：<br>
 </span></span></span><span class="line"><span class="cl"><span class="w">        </span>{{- <span class="l">end }}</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><h5 id="loggingefk-valuesyaml">logging/efk-values.yaml
-</h5><p>暂时还不会</p>
-<h5 id="monitoringprometheus-rulesyaml">monitoring/prometheus-rules.yaml
-</h5><div class="highlight"><div class="chroma">
+</div><h4 id="loggingefk-valuesyaml">logging/efk-values.yaml
+</h4><p>暂时还不会</p>
+<h4 id="monitoringprometheus-rulesyaml">monitoring/prometheus-rules.yaml
+</h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -831,8 +849,8 @@ clusterIP让外部访问的方式：<br>
 </span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;容器内存使用率超过 80%&#34;</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><h5 id="monitoringprometheus-valuesyaml">monitoring/prometheus-values.yaml
-</h5><div class="highlight"><div class="chroma">
+</div><h4 id="monitoringprometheus-valuesyaml">monitoring/prometheus-values.yaml
+</h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -891,8 +909,8 @@ clusterIP让外部访问的方式：<br>
 </span></span></span></code></pre></td></tr></table>
 </div>
 </div><p>grafana实现持久化存储时，需要配置storageClassName，这个storageClassName需要在k8s集群中已经存在，这里使用的是local-storage</p>
-<h5 id="monitoringstorageclassyaml">monitoring/storageclass.yaml
-</h5><div class="highlight"><div class="chroma">
+<h4 id="monitoringstorageclassyaml">monitoring/storageclass.yaml
+</h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
@@ -912,8 +930,8 @@ clusterIP让外部访问的方式：<br>
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">volumeBindingMode</span><span class="p">:</span><span class="w"> </span><span class="l">Immediate</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><h5 id="monitoringpvyaml">monitoring/pv.yaml
-</h5><div class="highlight"><div class="chroma">
+</div><h4 id="monitoringpvyaml">monitoring/pv.yaml
+</h4><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -968,7 +986,148 @@ clusterIP让外部访问的方式：<br>
 <li>这里的path需要创建好，否则会报错</li>
 <li>nodeAffinity是为了保证grafana的数据不会被其他节点的pod所使用，就一个工作节点所以没写，master节点上一般会有污点，最好调度到工作节点上</li>
 </ul>
-<p>项目暂时完成，grafana全是英文暂时不熟练，后续再完善</p>
+<h3 id="scripts">scripts
+</h3><h4 id="installsh">install.sh
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># filepath: scripts/setup-cluster.sh</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#!/bin/bash</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动本地集群</span>
+</span></span><span class="line"><span class="cl">start_cluster<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Starting minikube cluster...&#34;</span>
+</span></span><span class="line"><span class="cl">    minikube start --driver<span class="o">=</span>docker <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --memory<span class="o">=</span><span class="m">4096</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --cpus<span class="o">=</span><span class="m">2</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --kubernetes-version<span class="o">=</span>v1.24.0
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 安装必要的组件</span>
+</span></span><span class="line"><span class="cl">install_components<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 添加 Helm 仓库</span>
+</span></span><span class="line"><span class="cl">    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+</span></span><span class="line"><span class="cl">    helm repo add elastic https://helm.elastic.co
+</span></span><span class="line"><span class="cl">    helm repo update
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 创建必要的命名空间</span>
+</span></span><span class="line"><span class="cl">create_namespaces<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    kubectl create namespace monitoring
+</span></span><span class="line"><span class="cl">    kubectl create namespace logging
+</span></span><span class="line"><span class="cl">    kubectl create namespace applications
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">main<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    start_cluster
+</span></span><span class="line"><span class="cl">    install_components
+</span></span><span class="line"><span class="cl">    create_namespaces
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">main <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="deploysh">deploy.sh
+</h4><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 设置变量</span>
+</span></span><span class="line"><span class="cl"><span class="nv">APP_NAME</span><span class="o">=</span><span class="nv">$1</span>
+</span></span><span class="line"><span class="cl"><span class="nv">IMAGE</span><span class="o">=</span><span class="nv">$2</span>
+</span></span><span class="line"><span class="cl"><span class="nv">NAMESPACE</span><span class="o">=</span><span class="si">${</span><span class="nv">3</span><span class="k">:-</span><span class="nv">applications</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl"><span class="nv">REPLICAS</span><span class="o">=</span><span class="si">${</span><span class="nv">4</span><span class="k">:-</span><span class="nv">1</span><span class="si">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 验证输入</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="nv">$APP_NAME</span><span class="s2">&#34;</span> <span class="o">]</span> <span class="o">||</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="nv">$IMAGE</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Usage: </span><span class="nv">$0</span><span class="s2"> &lt;app-name&gt; &lt;image&gt; [namespace] [replicas]&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 部署应用</span>
+</span></span><span class="line"><span class="cl">deploy_application<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;Deploying </span><span class="nv">$APP_NAME</span><span class="s2">...&#34;</span>
+</span></span><span class="line"><span class="cl">    helm upgrade --install <span class="nv">$APP_NAME</span> ./helm-charts/app-template <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --namespace <span class="nv">$NAMESPACE</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --set <span class="nv">name</span><span class="o">=</span><span class="nv">$APP_NAME</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --set <span class="nv">image</span><span class="o">=</span><span class="nv">$IMAGE</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        --set <span class="nv">replicas</span><span class="o">=</span><span class="nv">$REPLICAS</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">main<span class="o">()</span> <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    deploy_application
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">main <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>项目暂时完成，grafana全是英文暂时不熟练，后续再完善</p>
 
 </section>
 
