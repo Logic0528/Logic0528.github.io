@@ -7,7 +7,15 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Logic</copyright>
-        <lastBuildDate>Thu, 15 May 2025 15:52:46 +0800</lastBuildDate><atom:link href="https://Logic0528.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 20 May 2025 10:38:28 +0800</lastBuildDate><atom:link href="https://Logic0528.github.io/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>基于K8s的应用自动化部署平台</title>
+        <link>https://Logic0528.github.io/p/%E5%9F%BA%E4%BA%8Ek8s%E7%9A%84%E5%BA%94%E7%94%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%B9%B3%E5%8F%B0/</link>
+        <pubDate>Tue, 20 May 2025 10:38:28 +0800</pubDate>
+        
+        <guid>https://Logic0528.github.io/p/%E5%9F%BA%E4%BA%8Ek8s%E7%9A%84%E5%BA%94%E7%94%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%B9%B3%E5%8F%B0/</guid>
+        <description></description>
+        </item>
+        <item>
         <title>K8s-污点与容忍</title>
         <link>https://Logic0528.github.io/p/k8s-%E6%B1%A1%E7%82%B9%E4%B8%8E%E5%AE%B9%E5%BF%8D/</link>
         <pubDate>Thu, 15 May 2025 15:52:46 +0800</pubDate>
