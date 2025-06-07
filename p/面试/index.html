@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="污点（Taint） effect: NoSchedule：不允许调度，已经存在的Pod不受影响\nPreferNoSchedule：尽量不调度，已经存在的Pod不受影响\nNoExecute：不允许调度，并且驱逐已经存在的Pod\n">
-<title>K8s-污点与容忍</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="五月份进行了两次面试，面试不同于闭门造车问的许多问题需要进行规范的回答类似于八股文之类的，虽然我很不喜欢八股文代表的那种死板的精神，但不得不承认在对于基础知识的掌握有许多不足，在面试过程中很多概念熟悉了解但是语言组织不够流畅，对面试中没能回答上来或者回答不流畅或者以后面试可能会遇到的额问题进行整理。\n">
+<title>面试</title>
 
-<link rel='canonical' href='https://Logic0528.github.io/p/k8s-%E6%B1%A1%E7%82%B9%E4%B8%8E%E5%AE%B9%E5%BF%8D/'>
+<link rel='canonical' href='https://Logic0528.github.io/p/%E9%9D%A2%E8%AF%95/'>
 
-<link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="K8s-污点与容忍">
-<meta property='og:description' content="污点（Taint） effect: NoSchedule：不允许调度，已经存在的Pod不受影响\nPreferNoSchedule：尽量不调度，已经存在的Pod不受影响\nNoExecute：不允许调度，并且驱逐已经存在的Pod\n">
-<meta property='og:url' content='https://Logic0528.github.io/p/k8s-%E6%B1%A1%E7%82%B9%E4%B8%8E%E5%AE%B9%E5%BF%8D/'>
+<link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="面试">
+<meta property='og:description' content="五月份进行了两次面试，面试不同于闭门造车问的许多问题需要进行规范的回答类似于八股文之类的，虽然我很不喜欢八股文代表的那种死板的精神，但不得不承认在对于基础知识的掌握有许多不足，在面试过程中很多概念熟悉了解但是语言组织不够流畅，对面试中没能回答上来或者回答不流畅或者以后面试可能会遇到的额问题进行整理。\n">
+<meta property='og:url' content='https://Logic0528.github.io/p/%E9%9D%A2%E8%AF%95/'>
 <meta property='og:site_name' content='Logic'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='K8s' /><meta property='article:tag' content='污点' /><meta property='article:tag' content='容忍' /><meta property='article:published_time' content='2025-05-15T15:52:46&#43;08:00'/><meta property='article:modified_time' content='2025-05-15T15:52:46&#43;08:00'/>
-<meta name="twitter:title" content="K8s-污点与容忍">
-<meta name="twitter:description" content="污点（Taint） effect: NoSchedule：不允许调度，已经存在的Pod不受影响\nPreferNoSchedule：尽量不调度，已经存在的Pod不受影响\nNoExecute：不允许调度，并且驱逐已经存在的Pod\n">
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-07T14:51:28&#43;08:00'/><meta property='article:modified_time' content='2025-06-07T14:51:28&#43;08:00'/>
+<meta name="twitter:title" content="面试">
+<meta name="twitter:description" content="五月份进行了两次面试，面试不同于闭门造车问的许多问题需要进行规范的回答类似于八股文之类的，虽然我很不喜欢八股文代表的那种死板的精神，但不得不承认在对于基础知识的掌握有许多不足，在面试过程中很多概念熟悉了解但是语言组织不够流畅，对面试中没能回答上来或者回答不流畅或者以后面试可能会遇到的额问题进行整理。\n">
     <link rel="shortcut icon" href="/cloud.ico" />
 
     </head>
@@ -300,22 +300,11 @@
   <ol>
     <li>
       <ol>
-        <li><a href="#污点taint">污点（Taint）</a>
+        <li>
           <ol>
-            <li><a href="#effect">effect:</a></li>
-          </ol>
-        </li>
-        <li><a href="#容忍toleration">容忍（Toleration）</a>
-          <ol>
-            <li><a href="#operator">operator:</a></li>
-            <li><a href="#value">value:</a></li>
-          </ol>
-        </li>
-        <li><a href="#亲和力affinity">亲和力（Affinity）</a>
-          <ol>
-            <li><a href="#nodeaffinity">NodeAffinity</a></li>
-            <li><a href="#podaffinity">PodAffinity</a></li>
-            <li><a href="#podantiaffinity节点反亲和力">PodAntiAffinity(节点反亲和力)</a></li>
+            <li><a href="#k8s架构和基本组件及其功能">k8s架构和基本组件及其功能</a></li>
+            <li><a href="#jekins如何实现扩容">jekins如何实现扩容</a></li>
+            <li><a href="#蓝绿发布金丝雀发布灰度发布">蓝绿发布，金丝雀发布，灰度发布</a></li>
           </ol>
         </li>
       </ol>
@@ -336,26 +325,10 @@
 
     <div class="article-details">
     
-    <header class="article-category">
-        
-            <a href="/categories/k8s/" >
-                K8s
-            </a>
-        
-            <a href="/categories/%E6%B1%A1%E7%82%B9/" >
-                污点
-            </a>
-        
-            <a href="/categories/%E5%AE%B9%E5%BF%8D/" >
-                容忍
-            </a>
-        
-    </header>
-    
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/k8s-%E6%B1%A1%E7%82%B9%E4%B8%8E%E5%AE%B9%E5%BF%8D/">K8s-污点与容忍</a>
+            <a href="/p/%E9%9D%A2%E8%AF%95/">面试</a>
         </h2>
     
         
@@ -377,7 +350,7 @@
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published">2025-05-15</time>
+                <time class="article-time--published">2025-06-07</time>
             </div>
         
 
@@ -393,193 +366,207 @@
     <section class="article-content">
     
     
-    <h3 id="污点taint">污点（Taint）
-</h3><h4 id="effect">effect:
-</h4><p>NoSchedule：不允许调度，已经存在的Pod不受影响</p>
-<p>PreferNoSchedule：尽量不调度，已经存在的Pod不受影响</p>
-<p>NoExecute：不允许调度，并且驱逐已经存在的Pod</p>
-<h3 id="容忍toleration">容忍（Toleration）
-</h3><h4 id="operator">operator:
-</h4><p>Equal：需要key和value完全匹配</p>
-<p>Exists：只需要key匹配，不需要value匹配</p>
-<h4 id="value">value:
-</h4><p>污点的值</p>
-<p>示例代码：</p>
+    <p>五月份进行了两次面试，面试不同于闭门造车问的许多问题需要进行规范的回答类似于八股文之类的，虽然我很不喜欢八股文代表的那种死板的精神，但不得不承认在对于基础知识的掌握有许多不足，在面试过程中很多概念熟悉了解但是语言组织不够流畅，对面试中没能回答上来或者回答不流畅或者以后面试可能会遇到的额问题进行整理。</p>
+<h4 id="k8s架构和基本组件及其功能">k8s架构和基本组件及其功能
+</h4><p>Kubernetes（k8s）是一个开源的容器编排平台，用于自动化部署、扩展和管理容器化应用。其架构采用主从（Master-Node）模型，核心组件分为控制平面（Control Plane）和工作节点（Worker Node）两部分。以下是详细架构和组件功能说明：</p>
+<p>一、控制平面（Master Components）
+控制平面负责集群的全局决策和调度，通常运行在独立的Master节点上。</p>
+<p>API Server（kube-apiserver）</p>
+<p>功能：集群的唯一入口，提供RESTful API，处理所有管理请求（如创建/删除Pod、部署应用等）。</p>
+<p>特点：无状态设计，可水平扩展；通过认证、授权、准入控制保证安全性。</p>
+<p>Scheduler（kube-scheduler）</p>
+<p>功能：监听未调度的Pod，根据资源需求、节点负载、亲和性等策略，将Pod绑定到合适的工作节点。</p>
+<p>策略：支持自定义调度算法（如优先选择低负载节点）。</p>
+<p>Controller Manager（kube-controller-manager）</p>
+<p>功能：运行一系列控制器，确保集群状态与预期一致。核心控制器包括：</p>
+<p>Node Controller：监控节点状态（如宕机时重新调度Pod）。</p>
+<p>Deployment Controller：管理副本数，实现滚动更新/回滚。</p>
+<p>Service Controller：维护Service与Pod的映射关系。</p>
+<p>etcd</p>
+<p>功能：分布式键值存储数据库，保存集群所有配置数据和状态（如Pod、Service、Namespace等）。</p>
+<p>特点：高可用性要求高，通常需部署奇数个节点（如3、5个）。</p>
+<p>二、工作节点（Node Components）
+每个工作节点负责运行容器化应用，包含以下组件：</p>
+<p>kubelet</p>
+<p>功能：节点上的“代理”，与API Server通信，管理本节点Pod的生命周期（创建/删除容器、监控资源等）。</p>
+<p>关键职责：确保Pod中容器健康（通过探针检查），上报节点状态。</p>
+<p>kube-proxy</p>
+<p>功能：维护节点上的网络规则（如iptables/IPVS），实现Service的负载均衡和流量转发。</p>
+<p>示例：将访问Service VIP的请求转发到后端Pod。</p>
+<p>容器运行时（Container Runtime）</p>
+<p>功能：负责运行容器（如Docker、containerd、CRI-O），支持OCI标准。</p>
+<p>三、附加组件（Addons）
+这些组件非必需，但为集群提供增强功能：</p>
+<p>CNI插件（如Calico、Flannel）</p>
+<p>功能：实现Pod间网络通信和跨节点网络策略。</p>
+<p>CoreDNS</p>
+<p>功能：为集群提供DNS解析服务（如Service名称到IP的映射）。</p>
+<p>Ingress Controller（如Nginx Ingress）</p>
+<p>功能：管理外部访问集群的HTTP/HTTPS路由规则。</p>
+<p>Metrics Server</p>
+<p>功能：收集资源使用指标（CPU/内存），供HPA（自动扩缩容）使用。</p>
+<p>Dashboard</p>
+<p>功能：提供Web UI界面管理集群。</p>
+<h4 id="jekins如何实现扩容">jekins如何实现扩容
+</h4><p>jenkins 的扩容主要通过 水平扩展（Horizontal Scaling） 和 垂直扩展（Vertical Scaling） 两种方式实现，具体取决于你的 Jenkins 架构（单机版或分布式）。以下是详细方案：</p>
+<p>一、单机 Jenkins 扩容
+适用于单节点 Jenkins，提升单个 Master 节点的处理能力。</p>
+<ol>
+<li>垂直扩展（Vertical Scaling）
+方式：增加 Jenkins Master 节点的 CPU、内存、磁盘 等资源。</li>
+</ol>
+<p>适用场景：任务量较小，但单个任务资源需求高（如大型构建任务）。</p>
+<p>实现方法：</p>
+<p>物理机：升级硬件配置。</p>
+<p>虚拟机/云主机：调整实例规格（如 AWS EC2 从 t2.medium 升级到 t2.large）。</p>
+<p>容器化部署：调整 Docker/Kubernetes 资源限制（resources.requests/limits）。</p>
+<ol start="2">
+<li>优化 Jenkins 配置
+调整 JVM 参数：修改 JENKINS_JAVA_OPTS，增加堆内存（如 -Xmx4g）。</li>
+</ol>
+<p>bash
+在 Jenkins 启动脚本或 systemd 配置中设置
+JAVA_OPTS=&quot;-Xmx4g -Xms2g&quot;
+清理旧数据：定期清理构建历史、日志、无用插件，减少磁盘占用。</p>
+<p>二、分布式 Jenkins 扩容（水平扩展）
+适用于高并发构建场景，通过 Master + Agent 架构 分散负载。</p>
+<ol>
+<li>添加 Jenkins Agent（工作节点）
+原理：Master 负责调度任务，Agent 执行具体构建任务。</li>
+</ol>
+<p>实现方式：</p>
+<p>静态 Agent：手动或通过脚本添加固定节点（物理机/虚拟机）。</p>
+<p>动态 Agent（弹性伸缩）：</p>
+<p>Kubernetes Plugin：在 K8s 集群中自动创建/销毁 Pod 作为 Agent。</p>
+<p>Docker Plugin：按需启动 Docker 容器作为 Agent。</p>
+<p>云平台插件（AWS EC2、Azure VM）：根据负载自动扩缩容云实例。</p>
+<ol start="2">
+<li>Kubernetes 动态扩缩容（推荐方案）
+步骤：</li>
+</ol>
+<p>安装 Kubernetes Plugin：
+Jenkins → 插件管理 → 安装 Kubernetes Plugin。</p>
+<p>配置 Kubernetes Cloud：
+Jenkins → 系统管理 → 节点管理 → 配置 Kubernetes 集群信息（API 地址、Namespace、认证等）。</p>
+<p>定义 Pod 模板：
+指定 Agent 的容器镜像、资源限制、卷挂载等（示例配置）：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">pod-with-tolerations</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">tolerations</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;key1&#34;</span><span class="w">           </span><span class="c"># 污点的键</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Equal&#34;</span><span class="w">     </span><span class="c"># 操作符：Equal或Exists</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;value1&#34;</span><span class="w">       </span><span class="c"># 污点的值</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">effect</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;NoSchedule&#34;</span><span class="w">  </span><span class="c"># 效果</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">tolerationSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">3600</span><span class="w">  </span><span class="c"># 容忍时间（仅用于NoExecute）</span><span class="w">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">jnlp</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">jenkins/inbound-agent:latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">limits</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">cpu</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">memory</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;2Gi&#34;</span><span class="w">
 </span></span></span></code></pre></td></tr></table>
 </div>
-</div><h3 id="亲和力affinity">亲和力（Affinity）
-</h3><h4 id="nodeaffinity">NodeAffinity
-</h4><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">with-node-affinity</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">affinity</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">nodeAffinity</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">requiredDuringSchedulingIgnoredDuringExecution</span><span class="p">:</span><span class="w">  </span><span class="c"># 硬性要求</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">nodeSelectorTerms</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes.io/os</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">values</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span>- <span class="l">linux</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">preferredDuringSchedulingIgnoredDuringExecution</span><span class="p">:</span><span class="w">  </span><span class="c"># 软性偏好</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">preference</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">disk-type</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">values</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span>- <span class="l">ssd</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="podaffinity">PodAffinity
-</h4><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">with-pod-affinity</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">affinity</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">podAffinity</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">requiredDuringSchedulingIgnoredDuringExecution</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">labelSelector</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">app</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">values</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span>- <span class="l">web-store</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">topologyKey</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes.io/hostname</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="podantiaffinity节点反亲和力">PodAntiAffinity(节点反亲和力)
-</h4><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Pod</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">with-pod-antiaffinity</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">affinity</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">podAntiAffinity</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">preferredDuringSchedulingIgnoredDuringExecution</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="m">100</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">podAffinityTerm</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">labelSelector</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">matchExpressions</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">app</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">              </span><span class="nt">operator</span><span class="p">:</span><span class="w"> </span><span class="l">In</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">              </span><span class="nt">values</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">              </span>- <span class="l">cache</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">topologyKey</span><span class="p">:</span><span class="w"> </span><span class="l">kubernetes.io/hostname</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>没什么好说的，类似于标签，慢工出细活~</p>
+</div><p>设置自动伸缩规则：</p>
+<p>通过 Jenkins Pipeline 或任务配置指定 label（如 kubernetes）。</p>
+<p>Kubernetes 根据任务队列长度自动创建/删除 Agent Pod。</p>
+<p>效果：</p>
+<p>无任务时：Agent Pod 数为 0，节省资源。</p>
+<p>高并发时：自动创建多个 Agent Pod 并行执行任务。</p>
+<p>三、高可用（HA）方案
+若需进一步提升可用性，可结合以下策略：</p>
+<p>Master 节点高可用：</p>
+<p>使用 Jenkins 集群（多个 Master + 共享存储，如 NFS 或 S3）。</p>
+<p>容器化部署时，通过 Kubernetes StatefulSet + PVC 持久化数据。</p>
+<p>负载均衡：</p>
+<p>通过 Nginx/HAProxy 代理多个 Jenkins Master。</p>
+<p>备份恢复：</p>
+<p>定期备份 JENKINS_HOME 目录（含配置和任务数据）。</p>
+<h4 id="蓝绿发布金丝雀发布灰度发布">蓝绿发布，金丝雀发布，灰度发布
+</h4><h5 id="一金丝雀发布canary-release">一、金丝雀发布（Canary Release）
+</h5><ol>
+<li>核心原理
+名称来源：类比矿工用金丝雀检测矿井瓦斯，先让小部分用户试用新版本，观察无问题后再逐步扩大范围。</li>
+</ol>
+<p>实现方式：</p>
+<p>将新版本（Canary）与旧版本同时在线，按比例（如 5%→20%→100%）将流量逐步切换到新版本。</p>
+<p>通过监控（错误率、延迟等）判断新版本稳定性，发现问题立即回滚。</p>
+<ol start="2">
+<li>典型场景
+需要验证新功能在真实环境的表现。</li>
+</ol>
+<p>避免全量发布导致的全局故障。</p>
+<ol start="3">
+<li>实现工具
+Kubernetes：通过 Ingress（如 Nginx Ingress 的 canary 注解）或 Service Mesh（如 Istio 的流量拆分）。</li>
+</ol>
+<p>示例（Istio 配置）：</p>
+<p>yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+name: my-app
+spec:
+hosts:
+- my-app.example.com
+http:
+- route:
+- destination:
+host: my-app
+subset: v1  # 旧版本
+weight: 90    # 90%流量
+- destination:
+host: my-app
+subset: v2  # 新版本（金丝雀）
+weight: 10    # 10%流量</p>
+<h5 id="二蓝绿发布blue-green-deployment">二、蓝绿发布（Blue-Green Deployment）
+</h5><ol>
+<li>核心原理
+颜色标识：</li>
+</ol>
+<p>Blue：当前生产环境（旧版本）。</p>
+<p>Green：新版本环境（完全独立部署）。</p>
+<p>切换方式：在测试通过后，一次性将全部流量从 Blue 切换到 Green（通过负载均衡器或 DNS 切换）。</p>
+<ol start="2">
+<li>典型场景
+需要零停机时间的发布。</li>
+</ol>
+<p>快速回滚（直接切回 Blue 环境）。</p>
+<ol start="3">
+<li>优缺点
+优点：发布和回滚极快，避免版本共存问题。</li>
+</ol>
+<p>缺点：需双倍资源成本，数据库兼容性需提前处理。</p>
+<ol start="4">
+<li>实现工具
+Kubernetes：通过创建两套完整的 Deployment + Service，切换 selector 或使用 Ingress 路由。</li>
+</ol>
+<p>云平台：AWS Elastic Beanstalk、Azure Deployment Slots。</p>
+<h5 id="三灰度发布gray-release">三、灰度发布（Gray Release）
+</h5><ol>
+<li>核心原理
+广义概念：涵盖所有渐进式发布策略（包括金丝雀发布）。</li>
+</ol>
+<p>狭义实现：按用户特征（如地理位置、用户ID、设备类型）逐步开放新版本，而非单纯按流量比例。</p>
+<ol start="2">
+<li>典型场景
+定向测试：仅对内部员工或特定用户群开放新功能。</li>
+</ol>
+<p>A/B 测试：对比不同版本的用户行为数据。</p>
+<ol start="3">
+<li>实现工具
+前端：通过 Feature Flag（如 LaunchDarkly）控制功能可见性。</li>
+</ol>
+<p>后端：Nginx/Apache 规则、Service Mesh（如 Istio 的基于 Header 的路由）。</p>
 
 </section>
 
 
     <footer class="article-footer">
     
-    <section class="article-tags">
-        
-            <a href="/tags/k8s/">K8s</a>
-        
-            <a href="/tags/%E6%B1%A1%E7%82%B9/">污点</a>
-        
-            <a href="/tags/%E5%AE%B9%E5%BF%8D/">容忍</a>
-        
-    </section>
-
 
     </footer>
 
@@ -590,28 +577,6 @@
     
 
     
-
-<aside class="related-content--wrapper">
-    <h2 class="section-title">相关文章</h2>
-    <div class="related-content">
-        <div class="flex article-list--tile">
-            
-                
-<article class="">
-    <a href="/p/%E5%9F%BA%E4%BA%8Ek8s%E7%9A%84%E5%BA%94%E7%94%A8%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%B9%B3%E5%8F%B0/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">基于K8s的应用自动化部署平台</h2>
-        </div>
-    </a>
-</article>
-
-            
-        </div>
-    </div>
-</aside>
 
      
     
