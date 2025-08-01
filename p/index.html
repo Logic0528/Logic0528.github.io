@@ -1,0 +1,3245 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="CKA认证 一.PVC 注意：解题前需连接到对应的主机。 题目： mariadb namespace 中的MariaDB Deployment 被误删除。请恢复该deployment并确保数据持久性。\n请按照以下步骤:\n如下规格在mariadb namespace 中创建名为 mariadb 的PVC： - 访问模式为ReadWriteOnce(依题目) - 存储为250Mi 集群中现有一个PersistentVolume,您必须使用现有的PV。 编辑位于~/mariadb-deployment.yaml 的 MariaDB Deployment 文件，以使用上一步中创建的PVC。 将更新的 Deploment 文件应用到集群 确保MariaDB Deployment正在运行且稳定 搭建模拟环境 正式考试中不需要搭建模拟环境，只需按照下面的解题步骤解题即可。在自己电脑上可以搭建个模拟环境模拟考试，同时起到练习的作用\n">
+<title></title>
+
+<link rel='canonical' href='https://Logic0528.github.io/p/'>
+
+<link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="">
+<meta property='og:description' content="CKA认证 一.PVC 注意：解题前需连接到对应的主机。 题目： mariadb namespace 中的MariaDB Deployment 被误删除。请恢复该deployment并确保数据持久性。\n请按照以下步骤:\n如下规格在mariadb namespace 中创建名为 mariadb 的PVC： - 访问模式为ReadWriteOnce(依题目) - 存储为250Mi 集群中现有一个PersistentVolume,您必须使用现有的PV。 编辑位于~/mariadb-deployment.yaml 的 MariaDB Deployment 文件，以使用上一步中创建的PVC。 将更新的 Deploment 文件应用到集群 确保MariaDB Deployment正在运行且稳定 搭建模拟环境 正式考试中不需要搭建模拟环境，只需按照下面的解题步骤解题即可。在自己电脑上可以搭建个模拟环境模拟考试，同时起到练习的作用\n">
+<meta property='og:url' content='https://Logic0528.github.io/p/'>
+<meta property='og:site_name' content='Logic'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' />
+<meta name="twitter:title" content="">
+<meta name="twitter:description" content="CKA认证 一.PVC 注意：解题前需连接到对应的主机。 题目： mariadb namespace 中的MariaDB Deployment 被误删除。请恢复该deployment并确保数据持久性。\n请按照以下步骤:\n如下规格在mariadb namespace 中创建名为 mariadb 的PVC： - 访问模式为ReadWriteOnce(依题目) - 存储为250Mi 集群中现有一个PersistentVolume,您必须使用现有的PV。 编辑位于~/mariadb-deployment.yaml 的 MariaDB Deployment 文件，以使用上一步中创建的PVC。 将更新的 Deploment 文件应用到集群 确保MariaDB Deployment正在运行且稳定 搭建模拟环境 正式考试中不需要搭建模拟环境，只需按照下面的解题步骤解题即可。在自己电脑上可以搭建个模拟环境模拟考试，同时起到练习的作用\n">
+    <link rel="shortcut icon" href="/cloud.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/handsomeface_hu_4135fd299faf6bb3.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Logic</a></h1>
+            <h2 class="site-description">计算，为了无法计算的价值</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/524569872?spm_id_from=333.1007.0.0'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1746705815934" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1473" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M958.145721 915.770428c-7.946995 0.03-15.98499 0.723-23.840985-0.12-28.837982-3.129998-49.849969 29.619981-59.843963 64.14796-8.999994 31.094981-43.165973 46.989971-73.929953 43.798972-35.520978-3.642998-59.030963-23.961985-68.091958-56.079965-5.448997-19.416988-21.914986-34.467978-40.035975-34.347978-125.014922 0.723-236.212852 0.362-361.226774 0-14.389991-0.03-29.740981 13.756991-33.955979 30.704981-8.999994 36.362977-39.914975 59.451963-74.141953 60.023962-35.429978 0.602-66.224959-21.884986-76.549953-59.632963-4.333997-15.80399-11.649993-49.608969-26.759983-48.765969-19.446988 1.083999-39.012976 0.542-58.519963 0.211-21.311987-0.391-30.733981-8.939994-30.733981-29.168982 0.15-205.688871 0.452-411.347743 0.993999-617.035614 0.06-21.252987 8.879994-28.416982 33.382979-28.446983 100.450937-0.12 200.901874-0.06 301.353812-0.06h21.010987c0.632-1.715999 1.294999-3.461998 1.926999-5.207996-23.329985-12.251992-46.658971-24.502985-69.957957-36.784977-38.680976-20.409987-77.422952-40.757975-116.043927-61.257962-15.65299-8.307995-22.155986-20.980987-13.304992-36.694977 8.939994-15.89399 23.719985-16.856989 39.162976-8.729995 90.697943 47.83297 181.425887 95.60494 271.79283 143.94991 23.148986 12.401992 64.809959 4.966997 79.70995-15.98499 46.207971-65.139959 92.384942-130.281919 138.591914-195.453878 1.624999-2.286999 3.189998-4.664997 4.875996-6.922995C737.194859 0.21 752.15585-4.575997 765.761841 5.869996c15.74399 12.070992 13.033992 26.399984 2.919999 40.757975-18.753988 26.579983-37.506977 53.129967-56.230965 79.71095-25.947984 36.844977-51.865968 73.719954-80.67395 114.659928h26.910983c99.759938 0 199.487875-0.03 299.216813 0.03 30.462981 0.03 35.159978 4.635997 35.189978 34.255979 0.3 202.166874 0.571 404.333747 0.752 606.499621 0.03 28.898982-5.297997 33.805979-35.700978 33.985979z m-149.909906 60.475962c15.95499-1.053999 23.539985-43.316973 28.386982-59.301963h-60.324962c5.929996 17.579989 14.147991 60.505962 31.93798 59.301963z m-587.896633 0.03c17.669989 1.083999 26.007984-41.631974 31.275981-59.180963h-59.421963c4.033997 16.52599 12.341992 58.217964 28.145982 59.179963z m712.881555-675.253578H90.357264v571.942642h842.863473V301.022812zM150.562226 417.879739c0.06-27.874983 13.515992-55.117966 41.570974-55.147966 214.117866-0.03 411.196743-1.564999 625.314609-1.504999 28.475982 0 55.477965 29.078982 55.567965 56.652965 0.362 132.991917-0.21 235.339853 0 368.33077 0.06 28.416982-25.706984 56.621965-55.567965 56.652964-106.742933 0.06-198.945876 0-305.658809 0-106.711933 0-198.915876 0.06-305.657809 0-31.065981-0.03-55.599965-26.038984-55.568965-56.652964 0.15-132.329917-0.24-236.001852 0-368.33077z m671.18958 364.206772c0-125.736921-4.303997-241.119849-4.303997-364.206772H206.130191c0 125.013922-0.723 240.33585-0.722999 364.206772h616.343614zM379.580083 491.209693c1.745999-0.783 3.912998-0.632 11.197993-1.685999 4.244997 4.153997 14.959991 9.873994 16.10499 17.037989 1.293999 8.367995-3.190998 22.967986-9.662994 26.249984-39.553975 20.076987-80.19195 38.168976-120.919925 55.899965-12.402992 5.386997-26.039984 1.323999-29.199981-11.920992-2.076999-8.669995 1.655999-25.135984 7.886995-28.265983 40.757975-20.619987 82.870948-38.591976 124.592922-57.314964z m12.431992 134.195916c7.705995-0.271 17.669989 10.384994 23.239985 18.512989 4.453997 6.471996 2.587998 16.826989 5.718997 24.652984 5.929996 14.900991 17.097989 29.079982 33.593979 25.586984 12.190992-2.557998 23.329985-14.749991 32.47998-24.863984 4.514997-4.996997 3.762998-14.869991 4.846997-22.606986 2.046999-14.569991 10.655993-23.539985 25.044984-23.178986 13.153992 0.331 21.702986 8.277995 23.389985 22.516986 1.082999 8.999994 1.323999 20.167987 6.711996 26.158984 8.609995 9.571994 21.010987 21.130987 32.11998 21.492986 10.052994 0.33 22.274986-11.829993 30.191981-21.221986 5.267997-6.231996 4.966997-17.248989 6.621996-26.249984 2.679998-14.357991 10.987993-23.087986 25.857984-21.943986 14.779991 1.143999 22.546986 10.655993 21.974986 25.496984-1.414999 37.656976-16.37599 68.270957-51.655968 85.068947-32.870979 15.68299-63.57596 8.939994-90.486943-15.171991-1.444999-1.293999-3.190998-2.227999-4.996997-3.461998-8.187995 5.689996-15.77399 12.281992-24.472985 16.82699-28.446982 14.839991-56.923964 13.606991-83.172948-4.634997-28.957982-20.168987-41.871974-49.548969-39.282975-83.714948 0.541-7.404995 14.267991-18.993988 22.274986-19.264988z m209.993869-135.941915c6.982996-12.221992 19.385988-15.56299 30.97498-8.969994 46.025971 26.218984 91.540943 53.339967 136.754915 80.853949 5.417997 3.280998 7.946995 11.167993 9.842994 13.997991 0.512 22.365986-18.000989 34.526978-35.038978 24.923985-45.544972-25.676984-90.336944-52.708967-135.068916-79.82995-11.799993-7.164996-14.297991-19.055988-7.464995-30.975981z" fill="#04A7FD" p-id="1474"></path></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Logic0528?tab=repositories'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://user.qzone.qq.com/1932886533/infocenter'
+                        target="_blank"
+                        title="QQ"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1746705918430" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5751" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M824.8 613.2c-16-51.4-34.4-94.6-62.7-165.3C766.5 262.2 689.3 112 511.5 112 331.7 112 256.2 265.2 261 447.9c-28.4 70.8-46.7 113.7-62.7 165.3-34 109.5-23 154.8-14.6 155.8 18 2.2 70.1-82.4 70.1-82.4 0 49 25.2 112.9 79.8 159-26.4 8.1-85.7 29.9-71.6 53.8 11.4 19.3 196.2 12.3 249.5 6.3 53.3 6 238.1 13 249.5-6.3 14.1-23.8-45.3-45.7-71.6-53.8 54.6-46.2 79.8-110.1 79.8-159 0 0 52.1 84.6 70.1 82.4 8.5-1.1 19.5-46.4-14.5-155.8z" p-id="5752" fill="#8a8a8a"></path></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://Logic0528.github.io/en/" >English</option>
+                                
+                                    <option value="https://Logic0528.github.io/" selected>中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#cka认证">CKA认证</a>
+      <ol>
+        <li><a href="#一pvc">一.PVC</a>
+          <ol>
+            <li><a href="#搭建模拟环境">搭建模拟环境</a></li>
+            <li><a href="#解题">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#二四层代理service">二.四层代理Service</a>
+          <ol>
+            <li><a href="#搭建模拟环境-1">搭建模拟环境</a></li>
+            <li><a href="#解题-1">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#三七层代理资源ingress">三.七层代理资源Ingress</a>
+          <ol>
+            <li><a href="#搭建模拟环境-2">搭建模拟环境</a></li>
+            <li><a href="#解题-2">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#四网络策略networkpolicy">四.网络策略NetworkPolicy</a>
+          <ol>
+            <li><a href="#搭建模拟环境-3">搭建模拟环境</a></li>
+            <li><a href="#解题-3">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#五配置管理中心configmap">五.配置管理中心configmap</a>
+          <ol>
+            <li><a href="#搭建模拟环境-4">搭建模拟环境</a></li>
+            <li><a href="#解题-4">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#六存储类storageclass">六.存储类storageclass</a>
+          <ol>
+            <li><a href="#解题-5">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#七hpapod水平自动扩缩容">七.HPA（Pod水平自动扩缩容）</a>
+          <ol>
+            <li><a href="#搭建模拟环境-5">搭建模拟环境</a></li>
+            <li><a href="#解题-6">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#八pod优先级priorityclass">八.Pod优先级PriorityClass</a>
+          <ol>
+            <li><a href="#搭建模拟环境-6">搭建模拟环境</a></li>
+            <li><a href="#解题-7">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#九resource配置-cpu-和-内存请求和限制">九.resource配置 cpu 和 内存请求和限制</a>
+          <ol>
+            <li><a href="#搭建模拟环境-7">搭建模拟环境</a></li>
+            <li><a href="#解题-8">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#十自定义资源crd">十.自定义资源CRD</a>
+          <ol>
+            <li><a href="#解题-9">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#十一gateway网关">十一.Gateway网关</a>
+          <ol>
+            <li><a href="#搭建模拟环境-8">搭建模拟环境</a></li>
+            <li><a href="#解题-10">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#十二sidecar边车容器">十二.sidecar边车容器</a>
+          <ol>
+            <li><a href="#搭建模拟环境-9">搭建模拟环境</a></li>
+            <li><a href="#解题-11">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#十三calico网络插件">十三.calico网络插件</a>
+          <ol>
+            <li><a href="#解题-12">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#十四argocd">十四.argocd</a></li>
+        <li><a href="#十五etcd修复">十五.etcd修复</a>
+          <ol>
+            <li><a href="#解题-13">解题</a></li>
+          </ol>
+        </li>
+        <li><a href="#十六cri-dockerd容器运行时">十六.cri-dockerd容器运行时</a>
+          <ol>
+            <li><a href="#解题-14">解题</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/"></a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="cka认证">CKA认证
+</h2><h3 id="一pvc">一.PVC
+</h3><ul>
+<li>注意：解题前需连接到对应的主机。</li>
+</ul>
+<p>题目： mariadb namespace 中的MariaDB Deployment 被误删除。请恢复该deployment并确保数据持久性。</p>
+<p>请按照以下步骤:</p>
+<ol>
+<li>如下规格在mariadb namespace 中创建名为 mariadb 的PVC：
+- 访问模式为ReadWriteOnce(依题目)
+- 存储为250Mi</li>
+<li>集群中现有一个PersistentVolume,您必须使用现有的PV。</li>
+<li>编辑位于~/mariadb-deployment.yaml 的 MariaDB Deployment 文件，以使用上一步中创建的PVC。</li>
+<li>将更新的 Deploment 文件应用到集群</li>
+<li>确保MariaDB Deployment正在运行且稳定</li>
+</ol>
+<h4 id="搭建模拟环境">搭建模拟环境
+</h4><p>正式考试中不需要搭建模拟环境，只需按照下面的解题步骤解题即可。在自己电脑上可以搭建个模拟环境模拟考试，同时起到练习的作用</p>
+<p>1.创建本地供应商</p>
+<p>​	动态制备 PV ,我们需要一个provisioner,一个 storageclass,在local-path-storage命名空间下。</p>
+<p>​	<strong>Provisioner</strong> 是一个核心组件，负责动态创建和管理持久化存储，Provisioner允许在Pod请求存储时<strong>自动创建</strong>所需的存储卷，无需管理员预先创建，这依赖于StorageClass资源的定义</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create ns local-path-storage
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>local-path-provisioner.yaml</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"></code></pre></td></tr></table>
+</div>
+</div><p>local-path-storage.yaml</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">	
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>2.创建namespace</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create ns mariadb
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>3.mariadb-pv.yaml</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: v1
+</span></span><span class="line"><span class="cl">kind: PersistentVolume
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: mariadb-pv
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	capacity:
+</span></span><span class="line"><span class="cl">		storage:250Mi
+</span></span><span class="line"><span class="cl">    accessModes:
+</span></span><span class="line"><span class="cl">    	- ReadWriteOnce
+</span></span><span class="line"><span class="cl">    persistentVolumeReclaimPolicy: Retain
+</span></span><span class="line"><span class="cl">    storageClasName: local-path
+</span></span><span class="line"><span class="cl">    hostPath:
+</span></span><span class="line"><span class="cl">    	path: /mnt/data/mariadb
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f mariadb-pv.yaml
+</span></span><span class="line"><span class="cl">kubectl get pv
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>4.mariadb-deployment.yaml</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: apps/v1
+</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: mariadb
+</span></span><span class="line"><span class="cl">	namespace: mariadb
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	replicas: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		matchLabels:
+</span></span><span class="line"><span class="cl">		app: mariadb
+</span></span><span class="line"><span class="cl">    template:
+</span></span><span class="line"><span class="cl">    	metadata:
+</span></span><span class="line"><span class="cl">    		labels:
+</span></span><span class="line"><span class="cl">    			app: mariadb
+</span></span><span class="line"><span class="cl">        spec:
+</span></span><span class="line"><span class="cl">        	containers:
+</span></span><span class="line"><span class="cl">        	- name: mariadb
+</span></span><span class="line"><span class="cl">        	  image: mariadb:10.5
+</span></span><span class="line"><span class="cl">        	  imagePullPolicy: IfNotPresent
+</span></span><span class="line"><span class="cl">        	  ports:
+</span></span><span class="line"><span class="cl">        	  - containerPort: <span class="m">3306</span>
+</span></span><span class="line"><span class="cl">        	  env:
+</span></span><span class="line"><span class="cl">        	  - name: MYSQL_ROOT_PASSWORD
+</span></span><span class="line"><span class="cl">        	  	value: <span class="s2">&#34;rootpassword&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="解题">解题
+</h4><p>解题即是在考试环境下需要做的操作</p>
+<ol>
+<li>
+<p>切换到指定节点</p>
+</li>
+<li>
+<p>检查pv,以及pv用到的storageclass</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pv
+</span></span><span class="line"><span class="cl">kubectl get sc
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建pvc</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: v1
+</span></span><span class="line"><span class="cl">kind: PersistentVolumeClaim
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: mariadb   <span class="c1">##按题目要求修改</span>
+</span></span><span class="line"><span class="cl">	namespace: mariadb   <span class="c1">##按题目要求修改</span>
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	storageClassName: local-path   <span class="c1">##第二步查到的sc</span>
+</span></span><span class="line"><span class="cl">	accessModes:
+</span></span><span class="line"><span class="cl">		- ReadWriteOnce   <span class="c1">##按题目要求修改</span>
+</span></span><span class="line"><span class="cl">    resources:
+</span></span><span class="line"><span class="cl">    	requests:
+</span></span><span class="line"><span class="cl">    		storage: 250Mi   <span class="c1">##按题目要求修改</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f pvc.yaml
+</span></span><span class="line"><span class="cl">kubectl get pvc -n mariadb
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>配置Deployment关联PVC</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim ~/mariadb-deployment.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>增加<strong>volumes</strong>和<strong>volumeMounts</strong>部分</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">volumes：
+</span></span><span class="line"><span class="cl">	- name:mariadb-data
+</span></span><span class="line"><span class="cl">	persistentVolumeClaim:
+</span></span><span class="line"><span class="cl">		claimName: <span class="s2">&#34;mariadb&#34;</span>
+</span></span><span class="line"><span class="cl">volumesMounts:
+</span></span><span class="line"><span class="cl">	- name: mariadb-data
+</span></span><span class="line"><span class="cl">	mountPath: /var/lib/mysql   <span class="c1">##按题目要求修改</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>完整的deployment.yaml文件如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: apps/v1 
+</span></span><span class="line"><span class="cl">kind: Deployment 
+</span></span><span class="line"><span class="cl">metadata: 
+</span></span><span class="line"><span class="cl">  name: mariadb 
+</span></span><span class="line"><span class="cl">  namespace: mariadb   <span class="c1"># 指定 namespace </span>
+</span></span><span class="line"><span class="cl">spec: 
+</span></span><span class="line"><span class="cl">  replicas: <span class="m">1</span> 
+</span></span><span class="line"><span class="cl">  selector: 
+</span></span><span class="line"><span class="cl">    matchLabels: 
+</span></span><span class="line"><span class="cl">      app: mariadb 
+</span></span><span class="line"><span class="cl">  template: 
+</span></span><span class="line"><span class="cl">    metadata: 
+</span></span><span class="line"><span class="cl">      labels: 
+</span></span><span class="line"><span class="cl">        app: mariadb 
+</span></span><span class="line"><span class="cl">    spec: 
+</span></span><span class="line"><span class="cl">      containers: 
+</span></span><span class="line"><span class="cl">      - name: mariadb 
+</span></span><span class="line"><span class="cl">        image: mariadb:10.5   <span class="c1"># 以考试为准，无需自己指定 </span>
+</span></span><span class="line"><span class="cl">        imagePullPolicy: IfNotPresent 
+</span></span><span class="line"><span class="cl">        ports: 
+</span></span><span class="line"><span class="cl">        - containerPort: <span class="m">3306</span> 
+</span></span><span class="line"><span class="cl">        env: 
+</span></span><span class="line"><span class="cl">        - name: MYSQL_ROOT_PASSWORD 
+</span></span><span class="line"><span class="cl">          value: <span class="s2">&#34;rootpassword&#34;</span>       <span class="c1"># 可按题目或需求设置</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        volumeMounts: 
+</span></span><span class="line"><span class="cl">        - name: mariadb-da 
+</span></span><span class="line"><span class="cl">          mountPath: /var/lib/mysql   <span class="c1"># 数据挂载路径 </span>
+</span></span><span class="line"><span class="cl">        volumes:
+</span></span><span class="line"><span class="cl">        - name: mariadb-data 
+</span></span><span class="line"><span class="cl">          persistentVolumeClaim: 
+</span></span><span class="line"><span class="cl">            claimName: <span class="s2">&#34;mariadb&#34;</span> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>检查Deployment和Pod运行状态</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f ~/mariadb-deployment.yaml
+</span></span><span class="line"><span class="cl">kubectl get deployment -n mariadb
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Pod状态应为Running</p>
+</li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="二四层代理service">二.四层代理Service
+</h3><p>题目：</p>
+<ol>
+<li>重新配置 spline namespace 中现有的 front-end Deployment, 以公开现有容器nginx的端口80/TCP。</li>
+<li>创建一个名为 front-end-svc 的新Service，以公开容器端口 80/TCP</li>
+<li>配置新的Service，以通过NodePort公开各个Pod</li>
+</ol>
+<h4 id="搭建模拟环境-1">搭建模拟环境
+</h4><ol>
+<li>
+<p>创建namespace</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create ns spline
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>front-end Deployment</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim 2-svc-deployment.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVersion: v1
+</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name：front-end
+</span></span><span class="line"><span class="cl">	namespace: spline
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	replicas: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		matchLabels:
+</span></span><span class="line"><span class="cl">			app: front-end
+</span></span><span class="line"><span class="cl">    template:
+</span></span><span class="line"><span class="cl">    	metadata:
+</span></span><span class="line"><span class="cl">    		labels:
+</span></span><span class="line"><span class="cl">    			app: front-end
+</span></span><span class="line"><span class="cl">        spec:
+</span></span><span class="line"><span class="cl">        	containers:
+</span></span><span class="line"><span class="cl">        		- name: nginx
+</span></span><span class="line"><span class="cl">        		  image: nginx:1.25
+</span></span><span class="line"><span class="cl">        		  imagePullPolicy: IfNotPresent
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f 2-svc-deploy.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h4 id="解题-1">解题
+</h4><ol>
+<li>
+<p>连接指定节点</p>
+</li>
+<li>
+<p>修改 front-end deployment 配置，添加端口配置</p>
+<p>在name: nginx下方新增端口配置</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl -n spline edit deployment front-end
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">ports:
+</span></span><span class="line"><span class="cl">- containerPort: <span class="m">80</span>
+</span></span><span class="line"><span class="cl">  protocol: TCP
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>注意：</p>
+<ul>
+<li>正确缩进，确保ports在name: nginx同层级下</li>
+<li>执行 kubectl -n spline edit deployment front-end 之后若提示如下，说明修改成功:deploymnet.apps/front-end edited</li>
+</ul>
+</li>
+<li>
+<p>暴露 Deployment，创建 NodePort 类型的Service，执行命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl -n spline expose deployment front-end --type<span class="o">=</span>NodePort -port<span class="o">=</span><span class="m">80</span> --target-port<span class="o">=</span><span class="m">80</span> --name<span class="o">=</span>front-end-svc
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>看到service/front-end-svc exposed,表示创建service成功
+<strong>参数说明</strong>：</p>
+<ul>
+<li>&ndash;type=NodePort : 依题目要求</li>
+<li>&ndash;port=80 ：Service监听端口</li>
+<li>&ndash;target-port : 容器内应用端口</li>
+<li>&ndash;name=front-end-svc : Service名称</li>
+</ul>
+</li>
+<li>
+<p>查看Service</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl -n spline get svc front-end-svc -o wide
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#测试访问，用查到的cluster-ip</span>
+</span></span><span class="line"><span class="cl">curl 10.96.101.208:80
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="三七层代理资源ingress">三.七层代理资源Ingress
+</h3><p>题目：创建新的 Ingress 资源，具体如下：
+名称： echo-hello
+Namespace:  sound</p>
+<p>使用 Service 端口 8080 在 <a class="link" href="http://example.org/echo-hello"  target="_blank" rel="noopener"
+    >http://example.org/echo-hello</a> 上公开 echoserver-service 的 Service</p>
+<p>可以使用以下命令检查 echoserver-service Service 的可用性，该命令应返回 hello world</p>
+<h4 id="搭建模拟环境-2">搭建模拟环境
+</h4><ol>
+<li>
+<p>安装Ingress-nginx-controller</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#ingress-deploy.yaml</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f ingress-deploy.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建命名空间</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create ns sound
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建pod</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim 3-ingress-deploy-pod.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVersion: v1
+</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: echoserver
+</span></span><span class="line"><span class="cl">	namespace: sound
+</span></span><span class="line"><span class="cl">spec: 
+</span></span><span class="line"><span class="cl">	repliacs: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">	selector: 
+</span></span><span class="line"><span class="cl">		matchLabels:
+</span></span><span class="line"><span class="cl">			app: echoserver
+</span></span><span class="line"><span class="cl">    template:
+</span></span><span class="line"><span class="cl">    	metadata:
+</span></span><span class="line"><span class="cl">    		labels:
+</span></span><span class="line"><span class="cl">    			app: echoserver
+</span></span><span class="line"><span class="cl">        spec:
+</span></span><span class="line"><span class="cl">        	containers:
+</span></span><span class="line"><span class="cl">        	- name: echoserver
+</span></span><span class="line"><span class="cl">        	  image: docker.io/library/tomcat:8.5.34-jre8-alpine
+</span></span><span class="line"><span class="cl">        	  imagePullPolicy: IfNotPresent
+</span></span><span class="line"><span class="cl">        	  ports:
+</span></span><span class="line"><span class="cl">        	  - containerPort:8080
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f 3-ingress-deploy-pod.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建service</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim 3-ingress-nsvc.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: v1
+</span></span><span class="line"><span class="cl">kind: Service
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: echoserver-service
+</span></span><span class="line"><span class="cl">	namespace: sound
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		app: echoserver
+</span></span><span class="line"><span class="cl">    ports:
+</span></span><span class="line"><span class="cl">    	- protocol: TCP
+</span></span><span class="line"><span class="cl">    	  port: <span class="m">8080</span>
+</span></span><span class="line"><span class="cl">    	  targetPort: <span class="m">8080</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f 3-ingress-svc.yaml
+</span></span><span class="line"><span class="cl">kubectl get svc -n sound
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">curl ip:8080
+</span></span><span class="line"><span class="cl"><span class="c1">#返回网页内容，说明可以通过svc代理pod</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h4 id="解题-2">解题
+</h4><ol>
+<li>
+<p>连接到指定节点</p>
+</li>
+<li>
+<p>查询 IngressClass ,确认 class 名字</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get ingressclasses.networking.k8s.io
+</span></span><span class="line"><span class="cl"><span class="c1">#kubectl get ingclass  # 等效于原命令，更简洁</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#查询结果如下</span>
+</span></span><span class="line"><span class="cl">NAME      CONTROLLER
+</span></span><span class="line"><span class="cl">nginx     k8s.io/ingress-nginx
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>编写 ingress.yaml</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim ingress.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: v1
+</span></span><span class="line"><span class="cl">kind: Ingress
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">  name: echo-hello
+</span></span><span class="line"><span class="cl">  namespace: sound  
+</span></span><span class="line"><span class="cl">  annotations:
+</span></span><span class="line"><span class="cl">    nginx.ingress.kubernetes.io/rewrite-target: /  <span class="c1"># 将请求路径重写为根路径</span>
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">  ingressClassName: nginx  <span class="c1"># 指定使用nginx类型的Ingress控制器</span>
+</span></span><span class="line"><span class="cl">  rules:
+</span></span><span class="line"><span class="cl">  - host: example.org  <span class="c1"># 匹配的域名</span>
+</span></span><span class="line"><span class="cl">    http:  <span class="c1"># HTTP路由规则</span>
+</span></span><span class="line"><span class="cl">      paths:
+</span></span><span class="line"><span class="cl">      - path: /echo-hello  <span class="c1"># 匹配的路径</span>
+</span></span><span class="line"><span class="cl">        pathType: Prefix  <span class="c1"># 路径匹配类型为前缀匹配</span>
+</span></span><span class="line"><span class="cl">        backend:
+</span></span><span class="line"><span class="cl">          service:
+</span></span><span class="line"><span class="cl">            name: echoserver-service  <span class="c1"># 转发到的服务名称</span>
+</span></span><span class="line"><span class="cl">            port:
+</span></span><span class="line"><span class="cl">              number: <span class="m">8080</span>  <span class="c1"># 转发到的服务端口</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建 ingress 资源</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f ingress.yaml
+</span></span><span class="line"><span class="cl">kubectl get ingress -n sound
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#验证Ingress配置</span>
+</span></span><span class="line"><span class="cl">curl http://example.org/echo-hello
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">exit</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h3 id="四网络策略networkpolicy">四.网络策略NetworkPolicy
+</h3><p>题目：从提供的YAML文件中选择并应用适当的NetworkPolicy。确保所选的NetworkPolicy不会过于宽松，同时允许运行在fronted和backend namespace 中的 fronted 和 backend Deployment之间的通信。</p>
+<p>首先，分析fronted 和 backend Deployment,了解其通信需求，以便确定需要应用的NetworkPolicy.</p>
+<p>接着，检查位于 ~/netpol 文件夹中的 NetworkPolicy YAML实例。</p>
+<p>最后，应用一个NetworkPolicy,以启用 frontend 和 backend Deployment 之间的通信，但不要使其过于宽松。</p>
+<h4 id="搭建模拟环境-3">搭建模拟环境
+</h4><ol>
+<li>
+<p>创建命名空间</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create ns frontend
+</span></span><span class="line"><span class="cl">kubectl create ns backend
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>在 fronted 和 backend 下部署pod</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim 4-fronted.aml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: apps/v1
+</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: fronted-app
+</span></span><span class="line"><span class="cl">	namespace: frontend
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	replicas: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		matchLabels:
+</span></span><span class="line"><span class="cl">			app: frontend
+</span></span><span class="line"><span class="cl">    template:
+</span></span><span class="line"><span class="cl">    	metadata:
+</span></span><span class="line"><span class="cl">    		labels:
+</span></span><span class="line"><span class="cl">    			app: frontend
+</span></span><span class="line"><span class="cl">        spec:
+</span></span><span class="line"><span class="cl">        	containers:
+</span></span><span class="line"><span class="cl">        	- name: nginx
+</span></span><span class="line"><span class="cl">        	  image: nginx:1.25
+</span></span><span class="line"><span class="cl">        	  imagePullPolicy: IfNotPresent
+</span></span><span class="line"><span class="cl">        	  ports:
+</span></span><span class="line"><span class="cl">        	  - containerPort:80
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f 4-frontend.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim 4-backend.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: apps/v1
+</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: backend-app
+</span></span><span class="line"><span class="cl">	namespace: backend
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	replicas: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		matchLabels:
+</span></span><span class="line"><span class="cl">			app: backend
+</span></span><span class="line"><span class="cl">        template:
+</span></span><span class="line"><span class="cl">        	metadata:
+</span></span><span class="line"><span class="cl">        		labels:
+</span></span><span class="line"><span class="cl">        			app: backend
+</span></span><span class="line"><span class="cl">            spec: 
+</span></span><span class="line"><span class="cl">            	containers:
+</span></span><span class="line"><span class="cl">            	- name: nginx
+</span></span><span class="line"><span class="cl">            	  image: nginx:1.25
+</span></span><span class="line"><span class="cl">            	  imagePullPolicy: IfNotPresent
+</span></span><span class="line"><span class="cl">            	  ports:
+</span></span><span class="line"><span class="cl">            	  - containerPort: <span class="m">80</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f 4-backend.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建backend默认拒绝策略</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim networkpolicy.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: networking.k8s.io/v1
+</span></span><span class="line"><span class="cl">kind： NetworkPolicy
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: default-deny-all
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	podSelector: <span class="o">{}</span>
+</span></span><span class="line"><span class="cl">	policyTypes:
+</span></span><span class="line"><span class="cl">	 - Ingress
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h4 id="解题-3">解题
+</h4><ol>
+<li>
+<p>连接到指定节点</p>
+</li>
+<li>
+<p>检查fronted和backend两个namespace的标签</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get ns frontend backend --show-labls
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>检查frontend和backend两个namespace下所有pod的标签</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl -n frontend get pod --show-labels
+</span></span><span class="line"><span class="cl">kubectl -n backend get pod --show-labels
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>查看默认拒绝策略
+检查backend namespace中是否有默认拒绝的Network Policy</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get networkpolicy -n backend
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>查看题目给定的NetworkPolicy示例，并选择最合适的策略</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cat ~/netpol/netpol1.yaml
+</span></span><span class="line"><span class="cl">cat ~/netpol/netpol2.yaml
+</span></span><span class="line"><span class="cl">cat ~/netpol/netpol3.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">## 根据题目要求选择合适的应用</span>
+</span></span><span class="line"><span class="cl">kubectl apply -f ***
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h3 id="五配置管理中心configmap">五.配置管理中心configmap
+</h3><p>题目：</p>
+<p>名为nginx-static-test的NGINX Deployment 正在nginx-static-test namespace 中运行，它通过名为 nginx-static-config 的ConfigMap进行配置。</p>
+<p>更新nginx-static-config 这个configmap 以仅允许 TLSv1.3连接</p>
+<p>注意：您可以根据需要重新创建，启动或扩展资源</p>
+<p>您可以使用以下命令测试更改：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -k --tls-max 1.2 https://web.k8snginx.local
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="搭建模拟环境-4">搭建模拟环境
+</h4><ol>
+<li>
+<p>创建命名空间</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create ns nginx-static-test
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>资源准备：ConfigMap</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: v1
+</span></span><span class="line"><span class="cl">kind: ConfigMap
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: nginx-static-config
+</span></span><span class="line"><span class="cl">	namespace: nginx-static-test
+</span></span><span class="line"><span class="cl">data:
+</span></span><span class="line"><span class="cl">	nginx.conf:<span class="o">{</span>
+</span></span><span class="line"><span class="cl">		worker_processes 1<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		envnts<span class="o">{</span>
+</span></span><span class="line"><span class="cl">			worker_connectionss 1024<span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		http<span class="o">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1"># SSL配置加在这里，http块内，server块外</span>
+</span></span><span class="line"><span class="cl">			ssl_protocols TLSv1.2<span class="p">;</span>
+</span></span><span class="line"><span class="cl">			ssl_ciphers <span class="s1">&#39;ECHDE-RSA-***&#39;</span>
+</span></span><span class="line"><span class="cl">			ssl_perfer_srever_ciphers on<span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		server<span class="o">{</span>
+</span></span><span class="line"><span class="cl">			listen 80<span class="p">;</span>
+</span></span><span class="line"><span class="cl">			server_name web.k8snginx.local<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			localtion/<span class="o">{</span>
+</span></span><span class="line"><span class="cl">				root /usr/share/nginx/html<span class="p">;</span>
+</span></span><span class="line"><span class="cl">				index index.html index.htm<span class="p">;</span>
+</span></span><span class="line"><span class="cl">			<span class="o">}</span>
+</span></span><span class="line"><span class="cl">		<span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f nginx-static-config.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>资源准备：Deployment</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: apps/v1
+</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: nginx-static-test
+</span></span><span class="line"><span class="cl">	namespace: nginx-static-test
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	replicas: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		matchlabels:
+</span></span><span class="line"><span class="cl">			app: nginx-static-test
+</span></span><span class="line"><span class="cl">    template:
+</span></span><span class="line"><span class="cl">    	metadata:
+</span></span><span class="line"><span class="cl">    		labels:
+</span></span><span class="line"><span class="cl">    			app: nginx-static-test
+</span></span><span class="line"><span class="cl">        spec:
+</span></span><span class="line"><span class="cl">        	containers:
+</span></span><span class="line"><span class="cl">        	- name: nginx
+</span></span><span class="line"><span class="cl">        	  image: nginx:1.25
+</span></span><span class="line"><span class="cl">        	  volumeMounts:
+</span></span><span class="line"><span class="cl">        	  - name: nginx-config
+</span></span><span class="line"><span class="cl">        	    mountPath: /etc/nginx/nginx.conf
+</span></span><span class="line"><span class="cl">        	    subPath: nginx.conf
+</span></span><span class="line"><span class="cl">              volumes:
+</span></span><span class="line"><span class="cl">              - name: nginx-config
+</span></span><span class="line"><span class="cl">                configMap:
+</span></span><span class="line"><span class="cl">                	name: nginx-static-config
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f nginx-static-deployment.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl get pods -n nginx-static-test
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h4 id="解题-4">解题
+</h4><ol>
+<li>
+<p>连接到指定节点</p>
+</li>
+<li>
+<p>导出现有的nginx-static-config ConfigMap</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl -n nginx-static-test get configmap nginx-static-config -o yaml &gt; nginx-static-config.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>修改ConfigMap的ssl_protocols配置</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim nginx-static-config.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">data:
+</span></span><span class="line"><span class="cl">	nginx.conf:
+</span></span><span class="line"><span class="cl">		<span class="c1">#其他配置...</span>
+</span></span><span class="line"><span class="cl">		ssl_protocols TLSv1.3<span class="p">;</span>  <span class="c1"># 按题目要求修改</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>先删除旧的ConfigMap,再创建新的configmap</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete configmap nginx-static-test -n nginx-static-test
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f nginx-static-test -n nginx-static-test
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>重启nginx-static-test Deployment</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl -n nginx-static-test rollout restart deployment nginx-static-test
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl get pods -n nginx-static-test
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>测试TLSv1.2连接，按照目前修改，访问是失败的说明配置正确</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -k --tls-max 1.2 https://web.k8snginx.local
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">exit</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h3 id="六存储类storageclass">六.存储类storageclass
+</h3><p>题目：</p>
+<p>首先，为名为rancher.io/local-path的现有制备器，创建一个名为test-local-path的新Storageclass</p>
+<p>将卷绑定模式设置为 WaitForFirstConsumer</p>
+<p>接下来，将test-local-path Storageclass设置为默认的Storageclass</p>
+<p>请勿修改任何现有的Deployment和PVC</p>
+<h4 id="解题-5">解题
+</h4><ol>
+<li>
+<p>连接至指定节点</p>
+</li>
+<li>
+<p>创建正确的Storageclass Yaml文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim sc.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVeison: storage.k8s.io/v1
+</span></span><span class="line"><span class="cl">kind: Storageclass
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: test-local-path
+</span></span><span class="line"><span class="cl">	annotations:
+</span></span><span class="line"><span class="cl">		storageclass.kubernetes.io/is-default-class:<span class="s2">&#34;true&#34;</span>
+</span></span><span class="line"><span class="cl">provisioner: rancher.io/local-path  <span class="c1"># 制备器的名字</span>
+</span></span><span class="line"><span class="cl">volumeBindingMode: WaitForFirstConsumer  <span class="c1"># 卷绑定模式依题目要求 </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> kubectl apply -f sc.yaml 
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>验证test-local-path是否是默认的Storageclass</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get storageclass
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 输出如下</span>
+</span></span><span class="line"><span class="cl">NAME　                PROVISIONER            DEFAULT
+</span></span><span class="line"><span class="cl">test-local-path<span class="o">(</span>default<span class="o">)</span>  rancher.io/local-path  <span class="nb">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 提示是true说明是对的</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="七hpapod水平自动扩缩容">七.HPA（Pod水平自动扩缩容）
+</h3><p>题目：</p>
+<p>在 autoscale namespace 中创建一个名为 nginx-server 的新 HorizontalPodAutoscaler(HPA),此HPA必须定位到 autoscale namespace 中名为 nginx-server的现有Deployment</p>
+<p>将HPA设置为每个Pod的CPU使用率旨在50%。将其配置为至少有一个Pod，且不超过4个Pod。此外，将缩小稳定窗口设置为30秒</p>
+<h4 id="搭建模拟环境-5">搭建模拟环境
+</h4><h4 id="解题-6">解题
+</h4><ol>
+<li>
+<p>连接至指定节点</p>
+</li>
+<li>
+<p>创建hpa</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl autoscale deployment nginx-server --cpu-percent<span class="o">=</span><span class="m">50</span> --min<span class="o">=</span><span class="m">1</span> --max<span class="o">=</span><span class="m">4</span> -n autoscale
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>修改HPA的稳定窗口为30s</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl edit horizontalpodautoscaler nginx-server -n autoscale
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	maxReplicas: <span class="m">4</span>
+</span></span><span class="line"><span class="cl">	minReplicas: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">	behavior:  <span class="c1"># 新增字段</span>
+</span></span><span class="line"><span class="cl">		scaleDown:
+</span></span><span class="line"><span class="cl">			stabilizationWindowsSeconds: <span class="m">30</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="八pod优先级priorityclass">八.Pod优先级PriorityClass
+</h3><p>题目：</p>
+<p>为用户工作负载创建一个名为 high-priority 的新 PriorityClass,其值比用户定义的现有最高优先级类值小一。修改在priority namespace 中运行的现有 busybox-logger Deployment，以使用 high-priority</p>
+<p>确保 busybox-logger Deployment 在设置了新优先级类后成功部署</p>
+<h4 id="搭建模拟环境-6">搭建模拟环境
+</h4><ol>
+<li>
+<p>创建namespace</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create ns priority
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建PriorityClass资源</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim priority-init.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVersion: scheduling.k8s.io/v1
+</span></span><span class="line"><span class="cl">kind: PriorityClass
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: max-priority
+</span></span><span class="line"><span class="cl">	value: <span class="m">1000000000</span>
+</span></span><span class="line"><span class="cl">	globalDefault: <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f priority-init.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建busybox-logger这个deployment资源</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim busybox-logger.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVersion: apps/v1
+</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: busybox-logger
+</span></span><span class="line"><span class="cl">	namespace: priority
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	replicas: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		matchLabels:
+</span></span><span class="line"><span class="cl">			app: busybox-logger
+</span></span><span class="line"><span class="cl">    template:
+</span></span><span class="line"><span class="cl">    	metadata:
+</span></span><span class="line"><span class="cl">    		labels:
+</span></span><span class="line"><span class="cl">    			app: busybox-logger
+</span></span><span class="line"><span class="cl">        spec:
+</span></span><span class="line"><span class="cl">        	containers:
+</span></span><span class="line"><span class="cl">        	- name: busybox
+</span></span><span class="line"><span class="cl">        	  image: busybox:1.28
+</span></span><span class="line"><span class="cl">        	  imagePollPolicy: IfNotPresent
+</span></span><span class="line"><span class="cl">        	  command: <span class="o">[</span><span class="s2">&#34;/bin/sh&#34;</span>,<span class="s2">&#34;-c&#34;</span>,<span class="s2">&#34;while true;do echo &#39;Logging...&#39;;sleep 5;done&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f busybox-logger.yaml
+</span></span><span class="line"><span class="cl">kubectl get pods -n priority
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h4 id="解题-7">解题
+</h4><ol>
+<li>
+<p>连接到指定节点</p>
+</li>
+<li>
+<p>查看当前集群存在的PriorityClass</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get priorityclass
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建新的PriorityClass</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim priority.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVersion: scheduling.k8s.io/v1
+</span></span><span class="line"><span class="cl">kind: PriorityClass
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: high-priority
+</span></span><span class="line"><span class="cl">value: <span class="m">999999999</span>
+</span></span><span class="line"><span class="cl">globalDefault: <span class="nb">false</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f priority.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>验证PriorityClass是否创建成功</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get priorityclass
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>在线修改Deployment的priorityClassName</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl edit deployment busybox-logger -n priority
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 找到spec.template.spec部分，通常在dnsPolicy:ClusterFirst上方</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 添加以下内容</span>
+</span></span><span class="line"><span class="cl">priorityClassName: high-priority
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="九resource配置-cpu-和-内存请求和限制">九.resource配置 cpu 和 内存请求和限制
+</h3><p>题目：</p>
+<p>您管理一个 WordPress 应用程序。由于资源的请求过高，导致某些pod无法启动</p>
+<p>relative-fawn namesapce 中的 WordPress 应用程序包含：
+具有 3 个副本的 WordPress Deployment</p>
+<p>按照如下方式调整所有 pod 的资源请求
+- 将节点资源平均分配给这 3 个 Pod
+- 为每个 Pod 分配公平的 CPU 和内存份额
+- 添加足够的开销以保持节点稳定</p>
+<p>请确保，对容器和初始化容器使用完全相同的请求，您无需更改任何资源限制</p>
+<p>在更新资源请求时，可以暂时将 WordPress Deployment 缩放为 0 个副本可能会有所帮助</p>
+<p>更新后，请确认：</p>
+<pre><code>- WordPress 保持 3 个副本
+- 所有 Pod 都在运行并准备就绪
+</code></pre>
+<h4 id="搭建模拟环境-7">搭建模拟环境
+</h4><ol>
+<li>
+<p>创建命名空间</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create namespace relative-fawn
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建 WordPress Deployment</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim wordpress-deployment.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVersion: apps/v1
+</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: wordpress
+</span></span><span class="line"><span class="cl">	namespace: relative-fawn
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	replicas: <span class="m">3</span>
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		matchLabels:
+</span></span><span class="line"><span class="cl">			app: wordpress
+</span></span><span class="line"><span class="cl">    template:
+</span></span><span class="line"><span class="cl">    	metadata:
+</span></span><span class="line"><span class="cl">    		labels:
+</span></span><span class="line"><span class="cl">    			app: wordpress
+</span></span><span class="line"><span class="cl">        spec:
+</span></span><span class="line"><span class="cl">        	initContainers:
+</span></span><span class="line"><span class="cl">        	- name: init-mysql
+</span></span><span class="line"><span class="cl">        	  image: busybox:1.28
+</span></span><span class="line"><span class="cl">        	  imagePullPolicy: IfNotPresent
+</span></span><span class="line"><span class="cl">        	  command: <span class="o">[</span><span class="s1">&#39;sh&#39;</span>,<span class="s1">&#39;-c&#39;</span>,<span class="s1">&#39;sleep 6&#39;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">        	  resources:
+</span></span><span class="line"><span class="cl">        	  	limits:
+</span></span><span class="line"><span class="cl">        	  		cpu: 1000m
+</span></span><span class="line"><span class="cl">        	  		memory: 500Mi
+</span></span><span class="line"><span class="cl">            containers:
+</span></span><span class="line"><span class="cl">            - name: wordpress
+</span></span><span class="line"><span class="cl">              imagePullPolicy: IfNotPresnet
+</span></span><span class="line"><span class="cl">              ports:
+</span></span><span class="line"><span class="cl">              - containerPort: <span class="m">80</span>
+</span></span><span class="line"><span class="cl">              resources:
+</span></span><span class="line"><span class="cl">              	limits:
+</span></span><span class="line"><span class="cl">              		cpu: 1000m
+</span></span><span class="line"><span class="cl">              		memory: 500Mi
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f wordpress -deployment.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl get pods -n relative-fawn
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h4 id="解题-8">解题
+</h4><ol>
+<li>
+<p>连接到指定节点</p>
+</li>
+<li>
+<p>将WordPress Deployment 副本缩放为0</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 必须先缩为 0 再改 requests,否则新 Pod 起不来</span>
+</span></span><span class="line"><span class="cl">kubectl -n relative scale deployment wordpress --replicas<span class="o">=</span><span class="m">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 检查副本数</span>
+</span></span><span class="line"><span class="cl">kubectl -n  relative-fawn get deployment wordpress
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 如果ready为0，说明缩放成功</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>检查 Node 资源使用情况</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get nodes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl describe node node-name
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>修改 Deployment 资源</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl -n relative-fawn edit deployment wordpress
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 将 2 个 container 的 requests 部分改为：</span>
+</span></span><span class="line"><span class="cl">resources:
+</span></span><span class="line"><span class="cl">	requests:
+</span></span><span class="line"><span class="cl">		cpu: 100m
+</span></span><span class="line"><span class="cl">		memory: 200Mi
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>将 wordpress 副本数恢复为 3</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl -n relative-fawn scale deployment wordpress --replicas<span class="o">=</span><span class="m">3</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>检查pod副本数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl -n relative-fawn get pod
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="十自定义资源crd">十.自定义资源CRD
+</h3><p>题目：</p>
+<p>验证已经部署到集群的 cert-manager 应用程序。</p>
+<p>使用 kubectl 将 cert-manager 命名空间所有自定义的资源（CRD）的列表，保存到~/resources.yaml</p>
+<p>使用 kubectl,提取定制资源 Certificate 的 subject 规范字段的文档，并将其保存到~/subject.yaml</p>
+<h4 id="解题-9">解题
+</h4><ol>
+<li>
+<p>连接至指定节点</p>
+</li>
+<li>
+<p>检查 cert-manager 资源</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get pods -n cert-manager
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>获取 cert-manager 的 CRD 资源列表</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get crd <span class="p">|</span> grep cert-manager
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 保存结果到文件</span>
+</span></span><span class="line"><span class="cl">kubectl get crd <span class="p">|</span> grep cert-manager &gt; ~resource.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>获取 Certificate 的 subject 规范字段</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl explain certificate.spec.subject
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 保存结果到文件</span>
+</span></span><span class="line"><span class="cl">kubectl explain certificate.spec.subject &gt; ~/subject.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="十一gateway网关">十一.Gateway网关
+</h3><p>题目：</p>
+<p>将现有 Web 应用程序从 Ingress 迁移到 Gateway API ，您必须维护 HTTPS 访问权限。</p>
+<p>注意：集群中安装了一个名为 nginx 的 Gatewayclass。</p>
+<p>首先，创建一个名为 web-local-gatewayn的 Gateway，主机名为 gateway.web.k8s.local ,并保持现有名为 web 的 Ingress 资源的现有 TLS和侦听器配置。</p>
+<p>接下来，创建一个名为 web-route 的 HTTPRoute, 主机名为gateway.web.k8s.local ,并保持现有名为 web 的 Ingress 资源的现有路由规则。</p>
+<p>您可以使用以下命令测试 Gateway API 配置：</p>
+<p>curl -Lk <a class="link" href="https://gateway.web.k8s.local:31443"  target="_blank" rel="noopener"
+    >https://gateway.web.k8s.local:31443</a></p>
+<p>最后，删除名为 web 的现有 Ingress 资源。</p>
+<h4 id="搭建模拟环境-8">搭建模拟环境
+</h4><ol>
+<li>
+<p>创建 deployment 和 service</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: apps/v1
+</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: web
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	replicas: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		matchLabels:
+</span></span><span class="line"><span class="cl">			app: web
+</span></span><span class="line"><span class="cl">    template:
+</span></span><span class="line"><span class="cl">    	metadata:
+</span></span><span class="line"><span class="cl">    		labels:
+</span></span><span class="line"><span class="cl">    			app: web
+</span></span><span class="line"><span class="cl">        spec:
+</span></span><span class="line"><span class="cl">        	containers:
+</span></span><span class="line"><span class="cl">        	- name: web
+</span></span><span class="line"><span class="cl">        	  image: nginx:1.25
+</span></span><span class="line"><span class="cl">        	  imagePullPolicy: IfNotPresent
+</span></span><span class="line"><span class="cl">        	  ports:
+</span></span><span class="line"><span class="cl">        	  - containerPort: <span class="m">80</span>
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">apiVersion: v1
+</span></span><span class="line"><span class="cl">kind: Service
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: web
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		app: web
+</span></span><span class="line"><span class="cl">    ports:
+</span></span><span class="line"><span class="cl">    - port: <span class="m">80</span>
+</span></span><span class="line"><span class="cl">      targetPort: <span class="m">80</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f web-deploy.yaml
+</span></span><span class="line"><span class="cl">kubectl get pods
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>准备TLS Secret</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 用openssl生成key和crt</span>
+</span></span><span class="line"><span class="cl">openssl req -x509 -nodes -days <span class="m">365</span> -newkey rsa:2048 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-subj <span class="s2">&#34;/CN=gateway.web.k8s.local&#34;</span><span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>-keyout tls.key -out tls.crt
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 创建sercret</span>
+</span></span><span class="line"><span class="cl">kubectl create secret tls web-cert --cert<span class="o">=</span>tls.crt --key<span class="o">=</span>tls.key
+</span></span><span class="line"><span class="cl">kubectl get secert web-cert -oyaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 创建ingress,后面要迁移到gateway</span>
+</span></span><span class="line"><span class="cl">vim web-ingress.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVersion: networking.k8s.io/v1
+</span></span><span class="line"><span class="cl">kind: Ingress
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">  name: web
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">  ingressClassName: nginx
+</span></span><span class="line"><span class="cl">  tls:
+</span></span><span class="line"><span class="cl">  - hosts:
+</span></span><span class="line"><span class="cl">    - gateway.web.k8s.local
+</span></span><span class="line"><span class="cl">    secretName: web-cert
+</span></span><span class="line"><span class="cl">  rules:
+</span></span><span class="line"><span class="cl">**- host: gateway.web.k8s.local**
+</span></span><span class="line"><span class="cl">    http:
+</span></span><span class="line"><span class="cl">      paths:
+</span></span><span class="line"><span class="cl">      - path: /
+</span></span><span class="line"><span class="cl">        pathType: Prefix
+</span></span><span class="line"><span class="cl">        backend:
+</span></span><span class="line"><span class="cl">          service:
+</span></span><span class="line"><span class="cl">            name: web
+</span></span><span class="line"><span class="cl">            port:
+</span></span><span class="line"><span class="cl">              number: <span class="m">80</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f web-ingress.yaml
+</span></span><span class="line"><span class="cl">kubectl get ingress
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h4 id="解题-10">解题
+</h4><ol>
+<li>
+<p>连接至指定节点</p>
+</li>
+<li>
+<p>检查现有的 ingress ,提取重要信息</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get ingress web -o yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建gateway</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim gateway.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVersion: gateway.networking.k8s.io/v1
+</span></span><span class="line"><span class="cl">kind: Gateway
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: web-local-gateway
+</span></span><span class="line"><span class="cl">spec： 
+</span></span><span class="line"><span class="cl">	gatewayClassName: nginx  <span class="c1"># 依题目修改</span>
+</span></span><span class="line"><span class="cl">	listeners:
+</span></span><span class="line"><span class="cl">	- name: https
+</span></span><span class="line"><span class="cl">	protocol: HTTPS  <span class="c1"># 看上面ingress是什么</span>
+</span></span><span class="line"><span class="cl">	port: <span class="m">443</span>
+</span></span><span class="line"><span class="cl">	hostname: gateway.web.k8s.local
+</span></span><span class="line"><span class="cl">	tls:
+</span></span><span class="line"><span class="cl">		mode: Terminate
+</span></span><span class="line"><span class="cl">		certificateRefs:
+</span></span><span class="line"><span class="cl">		- name: web-cert  <span class="c1"># 填写ingress里的tls secretname</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f gateway.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl get gateway
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建 httproute</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim httproute.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVersion: gateway.networking.k8s.io/v1
+</span></span><span class="line"><span class="cl">kind: HTTPRoute
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: web-route
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	parentRefs:
+</span></span><span class="line"><span class="cl">	- name: web-local-gateway
+</span></span><span class="line"><span class="cl">	hostnames:
+</span></span><span class="line"><span class="cl">	- <span class="s2">&#34;gateway.web.k8s.local&#34;</span>
+</span></span><span class="line"><span class="cl">	rules:
+</span></span><span class="line"><span class="cl">	- matches:
+</span></span><span class="line"><span class="cl">		- path:
+</span></span><span class="line"><span class="cl">			type: PathPrefix
+</span></span><span class="line"><span class="cl">			value: /  <span class="c1"># ingress里path路径</span>
+</span></span><span class="line"><span class="cl">        backendRefs:
+</span></span><span class="line"><span class="cl">        - name: web  <span class="c1"># ingress里service name</span>
+</span></span><span class="line"><span class="cl">          port: <span class="m">80</span>   <span class="c1"># ingress里service port</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f httproute.yaml
+</span></span><span class="line"><span class="cl">kubectl get httproute
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>测试gateway api 配置</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -Lk https://gateway.web.k8s.local:31443
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>删除web ingress</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl delete ingress web
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="十二sidecar边车容器">十二.sidecar边车容器
+</h3><p>题目：</p>
+<p>为了将传统应用程序集成到K8s的日志架构（如kubectl logs）中，通常的做法是添加一个用于日志流式传输的sidecar容器。</p>
+<p>更新现有的sync-leverager Deployment,将使用busybox:stable镜像，且名为sidecar的并置容器，添加到现有的pod,新的并置容器必须运行以下命令：
+/bin/sh -c &ldquo;tail -n+1 -f /var/log/sync-leverager.log&rdquo;</p>
+<p>使用挂载在 /var/log 的Volume，使日志文件sync-leverager.log可供并置容器使用</p>
+<p>除了添加所需的卷挂载之外，请勿修改现有容器的规范</p>
+<h4 id="搭建模拟环境-9">搭建模拟环境
+</h4><ol>
+<li>创建deployment资源
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim sidecar-deploy.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apiVersion: apps/v1
+</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">metadata:
+</span></span><span class="line"><span class="cl">	name: sync-leverager
+</span></span><span class="line"><span class="cl">	labels:
+</span></span><span class="line"><span class="cl">		app: sync-leverager
+</span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">	replicas: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">	selector:
+</span></span><span class="line"><span class="cl">		matchLabels:
+</span></span><span class="line"><span class="cl">			app: sync-leverager
+</span></span><span class="line"><span class="cl">    template:
+</span></span><span class="line"><span class="cl">    	metadata:
+</span></span><span class="line"><span class="cl">    		labels:
+</span></span><span class="line"><span class="cl">    			app: sync-leverager
+</span></span><span class="line"><span class="cl">        spec:
+</span></span><span class="line"><span class="cl">        	containers:
+</span></span><span class="line"><span class="cl">        	- name: sync-leverager
+</span></span><span class="line"><span class="cl">        	  image: nginx:1.25
+</span></span><span class="line"><span class="cl">        	  imagePullPolicy: IfNotPresent
+</span></span><span class="line"><span class="cl">        	  command: <span class="o">[</span><span class="s2">&#34;/bin/sh&#34;</span>, <span class="s2">&#34;-c&#34;</span>, <span class="s2">&#34;while true;do echo \&#34;</span><span class="k">$(</span>date<span class="k">)</span><span class="s2"> INFO log line\&#34; &gt;&gt; /var/log/sync-leverager.log;sleep 5;done&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl apply -f sidecar-deploy.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+<h4 id="解题-11">解题
+</h4><ol>
+<li>
+<p>连接到指定节点</p>
+</li>
+<li>
+<p>导出yaml文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get deployment sync-leverager -o yaml &gt; sidecar.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>编辑yaml文件</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim sidecar.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 新增内容如下</span>
+</span></span><span class="line"><span class="cl">spec.template.spec:
+</span></span><span class="line"><span class="cl">	volumes:
+</span></span><span class="line"><span class="cl">	- name: varlog
+</span></span><span class="line"><span class="cl">	  emptyDir: <span class="o">{}</span>
+</span></span><span class="line"><span class="cl">    containers:
+</span></span><span class="line"><span class="cl">    	...
+</span></span><span class="line"><span class="cl">    - command:
+</span></span><span class="line"><span class="cl">    		...
+</span></span><span class="line"><span class="cl">      volumeMounts:
+</span></span><span class="line"><span class="cl">      - name: varlog
+</span></span><span class="line"><span class="cl">        mountPath: /var/log
+</span></span><span class="line"><span class="cl">    - name: sidecar
+</span></span><span class="line"><span class="cl">      image: busybox:stable
+</span></span><span class="line"><span class="cl">      imagePullPolicy: IfNotPresent
+</span></span><span class="line"><span class="cl">      args: <span class="o">[</span><span class="s2">&#34;/bin/sh&#34;</span>,<span class="s2">&#34;-c&#34;</span>,<span class="s2">&#34;tail -n+1 -f /var/log/sync-leverager.log&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">      volumeMounts:
+</span></span><span class="line"><span class="cl">      - name: varlog
+</span></span><span class="line"><span class="cl">        mountPath: /var/log
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f sidecar.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>检查deployment,pod,sidecar容器日志</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get deployment sync-leverager
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl get pod <span class="p">|</span> grep sync-leverager
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl logs sync-leverager-** -c sidecar
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="十三calico网络插件">十三.calico网络插件
+</h3><p>题目：</p>
+<p>文档地址<br>
+Flannel Manifest：
+<a class="link" href="https://github.com/flannel-io/flannel/releases/download/v0.26.1/kube-flannel.yml"  target="_blank" rel="noopener"
+    >https://github.com/flannel-io/flannel/releases/download/v0.26.1/kube-flannel.yml</a></p>
+<p>Calico Manifest：
+<a class="link" href="https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/tigera-operator.yaml"  target="_blank" rel="noopener"
+    >https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/tigera-operator.yaml</a></p>
+<p>Context：  集群的 CNI 未通过安全审核，已被移除。您必须安装一个可以实施网络策略的新 CNI。</p>
+<p>Task:</p>
+<p>安装并设置满足以下要求的容器网络接口（CNI）：</p>
+<p>选择并安装以下CNI选项之一：</p>
+<ol>
+<li>Flannel版本 0.26.1</li>
+<li>Calico版本 3.27.0</li>
+</ol>
+<p>选择的CNI必须：</p>
+<ol>
+<li>让Pod相互通信</li>
+<li>支持Network Policy实施</li>
+<li>从清单文件安装（请勿使用helm）</li>
+</ol>
+<h4 id="解题-12">解题
+</h4><ol>
+<li>
+<p>连接到指定节点</p>
+</li>
+<li>
+<p>下载calico tigera-operator.yaml 文件并创建（Flannel不支持NetworkPolicy,只能选Calico）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/tigera-operator.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl create -f tigera-operater.yaml  <span class="c1"># 必须用create，apply可能导致CRD冲突</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>查看 PodCIDR</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cluster-info dump <span class="p">|</span> grep -i cluster-cidr
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 假设输出为： </span>
+</span></span><span class="line"><span class="cl"><span class="s2">&#34;clusterCIDR&#34;</span>: <span class="s2">&#34;10.244.0.0/16&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 记住这个地址：10.244.0.0/16 </span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>下载 Calico 自定义资源配置 custom-resources.yaml</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">wget 
+</span></span><span class="line"><span class="cl">https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/custom
+</span></span><span class="line"><span class="cl">resources.yaml 
+</span></span><span class="line"><span class="cl"><span class="c1"># 备注：这个网址考试没给，可以在tigera-operator.yaml这个下载地址基础上记个单词custom-resources.yaml 即可。</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>编辑 custom-resources.yaml 文件，修改 cidr 字段</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim custom-resources.yaml 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">spec: 
+</span></span><span class="line"><span class="cl">	calicoNetwork: 
+</span></span><span class="line"><span class="cl">		ipPools: 
+</span></span><span class="line"><span class="cl">		- blockSize: <span class="m">26</span> 
+</span></span><span class="line"><span class="cl">		  cidr: 10.244.0.0/16   <span class="c1"># 按上步骤实际查询的pod网段写 </span>
+</span></span><span class="line"><span class="cl">		  encapsulation: VXLANCrossSubnet 
+</span></span><span class="line"><span class="cl">	 	  natOutgoing: Enabled 
+</span></span><span class="line"><span class="cl">	      nodeSelector: all<span class="o">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>创建 Calico 自定义资源</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl create -f custom-resources.yaml
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>检查Calico组件运行状态</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl -n calico-system get pod
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="十四argocd">十四.argocd
+</h3><h3 id="十五etcd修复">十五.etcd修复
+</h3><p>题目：</p>
+<p>kubeadm 配置的集群已迁移到新机器，他需要更改配置才能成功运行。</p>
+<p>修复在机器迁移过程中损坏的单节点集群</p>
+<p>首先，确定损坏的集群组件，并调查导致其损坏的原因
+接下来，修复所有损坏的集群组件的配置。
+最后，确保集群运行正常，确保每个节点和 Pod 都处于Ready状态</p>
+<p>注意：</p>
+<ul>
+<li>已停用的集群使用外部 etcd 服务器</li>
+<li>确保重新启动所有必要的服务和组件，以使更改生效。否则可能导致分数降低。</li>
+</ul>
+<h4 id="解题-13">解题
+</h4><ol>
+<li>
+<p>连接到指定节点</p>
+</li>
+<li>
+<p>修复kube-apiserver配置（etcd地址）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 编辑kube-apiserver的静态Pod清单文件</span>
+</span></span><span class="line"><span class="cl">vim /etc/kubernetes/manifests/kube-apiserver.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 找到--etcd-server参数</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 改为：</span>
+</span></span><span class="line"><span class="cl">--etcd-server<span class="o">=</span>https://127.0.0.1:2379  <span class="c1">#指向本地etcd服务</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>重启kubelet服务</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">systemctl daemon-reload
+</span></span><span class="line"><span class="cl">systemctl restart kubelet
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>检查节点和Pod状态（此时可能还是有问题）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get nodes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl get pod -n kube-system
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>修复 kube-scheduler-master01 配置</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim /etc/kubernetes/manifests/kube-scheduler.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 找到resources 配置</span>
+</span></span><span class="line"><span class="cl">resources:
+</span></span><span class="line"><span class="cl">	requests:
+</span></span><span class="line"><span class="cl">	cpu: 100m
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>等待kubelet自动重启kube-scheduler,一两分钟后再次检查集群状态</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl get nodes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">kubectl get pod -n kube-system
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+<h3 id="十六cri-dockerd容器运行时">十六.cri-dockerd容器运行时
+</h3><p>题目：</p>
+<p>Context：您的任务是为 Kubernetes 准备一个 Linux 系统。 Docker 已被安装，但您需要为 kubeadm  配置它。</p>
+<p>完成以下任务，为 Kubernetes 准备系统：</p>
+<p>设置 cri-dockerd ：</p>
+<p>1.安装 Debian 软件包 ~/cri-dockerd_0.3.6.3-0.ubuntu-jammy_amd64.deb Debian 软件包 使用 dpkg 安装。</p>
+<p>2.启用并启动 cri-docker 服务</p>
+<p>配置以下系统参数:</p>
+<p>net.bridge.bridge-nf-call-iptables 设 置 为 1<br>
+net.ipv6.conf.all.forwarding 设 置 为 1<br>
+net.ipv4.ip_forward 设 置 为 1<br>
+net.netfilter.nf_conntrack_max 设置为 131072</p>
+<p>确保这些系统参数在系统重启后仍然存在，并应用于正在运行的系统。</p>
+<h4 id="解题-14">解题
+</h4><ol>
+<li>
+<p>连接到指定节点</p>
+</li>
+<li>
+<p>安装cri-dockerd并启动</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo dpkg -i ~/cri-dockerd_0.3.6.3-0ubuntu-jammy_amd64.deb
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> cri-docker
+</span></span><span class="line"><span class="cl">sudo systemctl start cri-docker
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>配置系统参数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo modprobe br_netfilter
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">sudo vim /etc/sysctl.conf
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#添加以下内容到文件最后</span>
+</span></span><span class="line"><span class="cl">net.bridge.bridge-nf-call-iptables <span class="o">=</span> <span class="m">1</span> 
+</span></span><span class="line"><span class="cl">net.ipv6.conf.all.forwarding <span class="o">=</span> <span class="m">1</span> 
+</span></span><span class="line"><span class="cl">net.ipv4.ip_forward <span class="o">=</span> <span class="m">1</span> 
+</span></span><span class="line"><span class="cl">net.netfilter.nf_conntrack_max <span class="o">=</span> <span class="m">131072</span> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>让配置生效</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo sysctl -p
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>exit退出当前节点</p>
+</li>
+</ol>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="Logic0528/Logic0528.github.io"
+    data-repo-id="R_kgDOOmnGCw"
+    data-category="Q&amp;A"
+    data-category-id="DIC_kwDOOmnGC84CqC7N"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="lightTheme"
+    data-lang="en"
+    data-loading=""
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('lightTheme');
+            } else {
+                setGiscusTheme('darkTheme');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Logic
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
