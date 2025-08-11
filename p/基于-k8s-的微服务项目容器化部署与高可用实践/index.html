@@ -970,8 +970,268 @@ Metrics Server 用于收集Pod/节点的CPU，内存使用数据，是HPA的依�
 </ol>
 <h3 id="七部署pig项目依赖服务">七.部署pig项目依赖服务
 </h3><ol>
+<li>部署MySQL</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"> apiVersion: v1
+</span></span><span class="line"><span class="cl"> kind: Service
+</span></span><span class="line"><span class="cl"> metadata:
+</span></span><span class="line"><span class="cl">   name: mysql
+</span></span><span class="line"><span class="cl">   labels:
+</span></span><span class="line"><span class="cl">     app: mysql
+</span></span><span class="line"><span class="cl"> spec:
+</span></span><span class="line"><span class="cl">   ports:
+</span></span><span class="line"><span class="cl">   - port: <span class="m">3306</span>
+</span></span><span class="line"><span class="cl">     name: mysql
+</span></span><span class="line"><span class="cl">   clusterIP: None  <span class="c1"># 无头服务，与StatefulSet配合</span>
+</span></span><span class="line"><span class="cl">   selector:
+</span></span><span class="line"><span class="cl">     app: mysql
+</span></span><span class="line"><span class="cl"> ---
+</span></span><span class="line"><span class="cl"> apiVersion: apps/v1
+</span></span><span class="line"><span class="cl"> kind: StatefulSet
+</span></span><span class="line"><span class="cl"> metadata:
+</span></span><span class="line"><span class="cl">   name: mysql
+</span></span><span class="line"><span class="cl"> spec:
+</span></span><span class="line"><span class="cl">   serviceName: <span class="s2">&#34;mysql&#34;</span>  <span class="c1"># 关联上面定义的无头服务</span>
+</span></span><span class="line"><span class="cl">   replicas: <span class="m">1</span>  <span class="c1"># 可根据需要扩展为多节点</span>
+</span></span><span class="line"><span class="cl">   selector:
+</span></span><span class="line"><span class="cl">     matchLabels:
+</span></span><span class="line"><span class="cl">       app: mysql
+</span></span><span class="line"><span class="cl">   template:
+</span></span><span class="line"><span class="cl">     metadata:
+</span></span><span class="line"><span class="cl">       labels:
+</span></span><span class="line"><span class="cl">         app: mysql
+</span></span><span class="line"><span class="cl">     spec:
+</span></span><span class="line"><span class="cl">       initContainers:
+</span></span><span class="line"><span class="cl">       - name: init-mysql
+</span></span><span class="line"><span class="cl">         image: mysql:8.0
+</span></span><span class="line"><span class="cl">         command:
+</span></span><span class="line"><span class="cl">         - bash
+</span></span><span class="line"><span class="cl">         - <span class="s2">&#34;-c&#34;</span>
+</span></span><span class="line"><span class="cl">         - <span class="p">|</span>
+</span></span><span class="line"><span class="cl">           <span class="nb">set</span> -ex
+</span></span><span class="line"><span class="cl">           <span class="c1"># 生成MySQL配置文件</span>
+</span></span><span class="line"><span class="cl">           cat &gt; /mnt/conf.d/my.cnf <span class="s">&lt;&lt; &#39;EOF&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s">           [mysqld]
+</span></span></span><span class="line"><span class="cl"><span class="s">           skip-host-cache
+</span></span></span><span class="line"><span class="cl"><span class="s">           skip-name-resolve
+</span></span></span><span class="line"><span class="cl"><span class="s">           datadir = /var/lib/mysql
+</span></span></span><span class="line"><span class="cl"><span class="s">           socket = /var/lib/mysql/mysql.sock
+</span></span></span><span class="line"><span class="cl"><span class="s">           pid-file = /var/run/mysqld/mysqld.pid
+</span></span></span><span class="line"><span class="cl"><span class="s">           EOF</span>
+</span></span><span class="line"><span class="cl">           <span class="c1"># 为不同实例生成标识文件</span>
+</span></span><span class="line"><span class="cl">           <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="k">$(</span>ls -A /var/lib/mysql<span class="k">)</span><span class="s2">&#34;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">             <span class="nb">echo</span> <span class="s2">&#34;server-id=1&#34;</span> &gt;&gt; /mnt/conf.d/my.cnf
+</span></span><span class="line"><span class="cl">           <span class="k">fi</span>
+</span></span><span class="line"><span class="cl">         volumeMounts:
+</span></span><span class="line"><span class="cl">         - name: conf
+</span></span><span class="line"><span class="cl">           mountPath: /mnt/conf.d
+</span></span><span class="line"><span class="cl">         - name: data
+</span></span><span class="line"><span class="cl">           mountPath: /var/lib/mysql
+</span></span><span class="line"><span class="cl">           subPath: mysql
+</span></span><span class="line"><span class="cl">       containers:
+</span></span><span class="line"><span class="cl">       - name: mysql
+</span></span><span class="line"><span class="cl">         image: mysql:8.0
+</span></span><span class="line"><span class="cl">         ports:
+</span></span><span class="line"><span class="cl">         - containerPort: <span class="m">3306</span>
+</span></span><span class="line"><span class="cl">           name: mysql
+</span></span><span class="line"><span class="cl">         env:
+</span></span><span class="line"><span class="cl">         - name: MYSQL_ROOT_PASSWORD
+</span></span><span class="line"><span class="cl">           valueFrom:
+</span></span><span class="line"><span class="cl">             secretKeyRef:
+</span></span><span class="line"><span class="cl">               name: mysql-secret
+</span></span><span class="line"><span class="cl">               key: root-password
+</span></span><span class="line"><span class="cl">         - name: MYSQL_DATABASE
+</span></span><span class="line"><span class="cl">           value: <span class="s2">&#34;pig&#34;</span>
+</span></span><span class="line"><span class="cl">         volumeMounts:
+</span></span><span class="line"><span class="cl">         - name: conf
+</span></span><span class="line"><span class="cl">           mountPath: /etc/mysql/conf.d
+</span></span><span class="line"><span class="cl">         - name: data
+</span></span><span class="line"><span class="cl">           mountPath: /var/lib/mysql
+</span></span><span class="line"><span class="cl">           subPath: mysql
+</span></span><span class="line"><span class="cl">         - name: init-sql
+</span></span><span class="line"><span class="cl">           mountPath: /docker-entrypoint-initdb.d
+</span></span><span class="line"><span class="cl">         livenessProbe:
+</span></span><span class="line"><span class="cl">           exec:
+</span></span><span class="line"><span class="cl">             command: <span class="o">[</span><span class="s2">&#34;mysqladmin&#34;</span>, <span class="s2">&#34;ping&#34;</span>, <span class="s2">&#34;-u&#34;</span>, <span class="s2">&#34;root&#34;</span>, <span class="s2">&#34;-p</span><span class="k">$(</span>MYSQL_ROOT_PASSWORD<span class="k">)</span><span class="s2">&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">           initialDelaySeconds: <span class="m">30</span>
+</span></span><span class="line"><span class="cl">           periodSeconds: <span class="m">10</span>
+</span></span><span class="line"><span class="cl">           timeoutSeconds: <span class="m">5</span>
+</span></span><span class="line"><span class="cl">         readinessProbe:
+</span></span><span class="line"><span class="cl">           exec:
+</span></span><span class="line"><span class="cl">             command: <span class="o">[</span><span class="s2">&#34;mysql&#34;</span>, <span class="s2">&#34;-h&#34;</span>, <span class="s2">&#34;127.0.0.1&#34;</span>, <span class="s2">&#34;-u&#34;</span>, <span class="s2">&#34;root&#34;</span>, <span class="s2">&#34;-p</span><span class="k">$(</span>MYSQL_ROOT_PASSWORD<span class="k">)</span><span class="s2">&#34;</span>, <span class="s2">&#34;-e&#34;</span>, <span class="s2">&#34;SELECT 1&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">           initialDelaySeconds: <span class="m">5</span>
+</span></span><span class="line"><span class="cl">           periodSeconds: <span class="m">2</span>
+</span></span><span class="line"><span class="cl">           timeoutSeconds: <span class="m">1</span>
+</span></span><span class="line"><span class="cl">       volumes:
+</span></span><span class="line"><span class="cl">       - name: conf
+</span></span><span class="line"><span class="cl">         emptyDir: <span class="o">{}</span>
+</span></span><span class="line"><span class="cl">       - name: init-sql
+</span></span><span class="line"><span class="cl">         hostPath:
+</span></span><span class="line"><span class="cl">           path: /root/pig/db
+</span></span><span class="line"><span class="cl">           type: DirectoryOrCreate
+</span></span><span class="line"><span class="cl">   <span class="c1"># 定义PVC模板，StatefulSet会为每个实例创建独立的PVC</span>
+</span></span><span class="line"><span class="cl">   volumeClaimTemplates:
+</span></span><span class="line"><span class="cl">   - metadata:
+</span></span><span class="line"><span class="cl">       name: data
+</span></span><span class="line"><span class="cl">     spec:
+</span></span><span class="line"><span class="cl">       accessModes: <span class="o">[</span> <span class="s2">&#34;ReadWriteOnce&#34;</span> <span class="o">]</span>
+</span></span><span class="line"><span class="cl">       storageClassName: <span class="s2">&#34;nfs-storageclass&#34;</span>
+</span></span><span class="line"><span class="cl">       resources:
+</span></span><span class="line"><span class="cl">         requests:
+</span></span><span class="line"><span class="cl">           storage: 10Gi
+</span></span><span class="line"><span class="cl"> ---
+</span></span><span class="line"><span class="cl"> <span class="c1"># 存储数据库密码的Secret</span>
+</span></span><span class="line"><span class="cl"> apiVersion: v1
+</span></span><span class="line"><span class="cl"> kind: Secret
+</span></span><span class="line"><span class="cl"> metadata:
+</span></span><span class="line"><span class="cl">   name: mysql-secret
+</span></span><span class="line"><span class="cl"> type: Opaque
+</span></span><span class="line"><span class="cl"> data:
+</span></span><span class="line"><span class="cl">   root-password: <span class="nv">cm9vdA</span><span class="o">==</span>  <span class="c1"># 这里是&#34;root&#34;的base64编码，实际使用应更换为强密码</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>部署MySQL</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 确保pig项目的db目录在部署节点存在</span>
+</span></span><span class="line"><span class="cl">kubectl apply -f mysql-deploy.yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 验证MySQL状态</span>
+</span></span><span class="line"><span class="cl">kubectl get pods <span class="p">|</span> grep mysql
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol start="2">
 <li>
-<p>部署MySQL，使用存储类持久化数据</p>
+<p>部署redis</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -1036,167 +1296,38 @@ Metrics Server 用于收集Pod/节点的CPU，内存使用数据，是HPA的依�
 </span><span class="lnt">60
 </span><span class="lnt">61
 </span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim mysql-deploy.yaml
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">apiVersion: v1
-</span></span><span class="line"><span class="cl">kind: PersistentVolumeClaim
-</span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: mysql-pvc
-</span></span><span class="line"><span class="cl">spec:
-</span></span><span class="line"><span class="cl">  accessModes:
-</span></span><span class="line"><span class="cl">  - ReadWriteOnce
-</span></span><span class="line"><span class="cl">  storageClassName: nfs-storageclass 
-</span></span><span class="line"><span class="cl">  resources:
-</span></span><span class="line"><span class="cl">    requests:
-</span></span><span class="line"><span class="cl">      storage: 10Gi  
-</span></span><span class="line"><span class="cl">---
-</span></span><span class="line"><span class="cl">apiVersion: apps/v1
-</span></span><span class="line"><span class="cl">kind: Deployment
-</span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: mysql
-</span></span><span class="line"><span class="cl">spec:
-</span></span><span class="line"><span class="cl">  replicas: <span class="m">1</span>
-</span></span><span class="line"><span class="cl">  selector:
-</span></span><span class="line"><span class="cl">    matchLabels:
-</span></span><span class="line"><span class="cl">      app: mysql
-</span></span><span class="line"><span class="cl">  template:
-</span></span><span class="line"><span class="cl">    metadata:
-</span></span><span class="line"><span class="cl">      labels:
-</span></span><span class="line"><span class="cl">        app: mysql
-</span></span><span class="line"><span class="cl">    spec:
-</span></span><span class="line"><span class="cl">      containers:
-</span></span><span class="line"><span class="cl">      - name: mysql
-</span></span><span class="line"><span class="cl">        image: mysql:8.0
-</span></span><span class="line"><span class="cl">        ports:
-</span></span><span class="line"><span class="cl">        - containerPort: <span class="m">3306</span>
-</span></span><span class="line"><span class="cl">        env:
-</span></span><span class="line"><span class="cl">        - name: MYSQL_ROOT_PASSWORD
-</span></span><span class="line"><span class="cl">          value: <span class="s2">&#34;root&#34;</span>  <span class="c1"># 数据库密码，需与pig项目配置一致</span>
-</span></span><span class="line"><span class="cl">        - name: MYSQL_DATABASE
-</span></span><span class="line"><span class="cl">          value: <span class="s2">&#34;pig&#34;</span>   <span class="c1"># 初始化数据库名</span>
-</span></span><span class="line"><span class="cl">        volumeMounts:
-</span></span><span class="line"><span class="cl">        - name: mysql-data
-</span></span><span class="line"><span class="cl">          mountPath: /var/lib/mysql
-</span></span><span class="line"><span class="cl">        - name: init-sql
-</span></span><span class="line"><span class="cl">          mountPath: /docker-entrypoint-initdb.d  <span class="c1"># 初始化SQL目录</span>
-</span></span><span class="line"><span class="cl">      volumes:
-</span></span><span class="line"><span class="cl">      - name: mysql-data
-</span></span><span class="line"><span class="cl">        persistentVolumeClaim:
-</span></span><span class="line"><span class="cl">          claimName: mysql-pvc
-</span></span><span class="line"><span class="cl">      - name: init-sql
-</span></span><span class="line"><span class="cl">        hostPath:
-</span></span><span class="line"><span class="cl">          path: /root/pig/db  <span class="c1"># 指向节点上pig项目的db目录（需确保该目录存在）</span>
-</span></span><span class="line"><span class="cl">---
-</span></span><span class="line"><span class="cl">apiVersion: v1
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apiVersion: v1
 </span></span><span class="line"><span class="cl">kind: Service
 </span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: mysql-service
+</span></span><span class="line"><span class="cl">  name: redis
+</span></span><span class="line"><span class="cl">  labels:
+</span></span><span class="line"><span class="cl">    app: redis
 </span></span><span class="line"><span class="cl">spec:
-</span></span><span class="line"><span class="cl">  selector:
-</span></span><span class="line"><span class="cl">    app: mysql
 </span></span><span class="line"><span class="cl">  ports:
-</span></span><span class="line"><span class="cl">  - port: <span class="m">3306</span>
-</span></span><span class="line"><span class="cl">    targetPort: <span class="m">3306</span>
-</span></span><span class="line"><span class="cl">  clusterIP: None  <span class="c1"># 无头服务，适合数据库</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>部署MySQL</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 确保pig项目的db目录在部署节点存在</span>
-</span></span><span class="line"><span class="cl">kubectl apply -f mysql-deploy.yaml
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 验证MySQL状态</span>
-</span></span><span class="line"><span class="cl">kubectl get pods <span class="p">|</span> grep mysql
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p>部署redis</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim redis-deploy.yaml
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">apiVersion: v1
-</span></span><span class="line"><span class="cl">kind: PersistentVolumeClaim
-</span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: redis-pvc
-</span></span><span class="line"><span class="cl">spec:
-</span></span><span class="line"><span class="cl">  accessModes:
-</span></span><span class="line"><span class="cl">  - ReadWriteOnce
-</span></span><span class="line"><span class="cl">  storageClassName: nfs-storageclass
-</span></span><span class="line"><span class="cl">  resources:
-</span></span><span class="line"><span class="cl">    requests:
-</span></span><span class="line"><span class="cl">      storage: 5Gi
+</span></span><span class="line"><span class="cl">  - port: <span class="m">6379</span>
+</span></span><span class="line"><span class="cl">    name: redis
+</span></span><span class="line"><span class="cl">  clusterIP: None  <span class="c1"># 无头服务</span>
+</span></span><span class="line"><span class="cl">  selector:
+</span></span><span class="line"><span class="cl">    app: redis
 </span></span><span class="line"><span class="cl">---
 </span></span><span class="line"><span class="cl">apiVersion: apps/v1
-</span></span><span class="line"><span class="cl">kind: Deployment
+</span></span><span class="line"><span class="cl">kind: StatefulSet
 </span></span><span class="line"><span class="cl">metadata:
 </span></span><span class="line"><span class="cl">  name: redis
 </span></span><span class="line"><span class="cl">spec:
+</span></span><span class="line"><span class="cl">  serviceName: <span class="s2">&#34;redis&#34;</span>  <span class="c1"># 关联无头服务</span>
 </span></span><span class="line"><span class="cl">  replicas: <span class="m">1</span>
 </span></span><span class="line"><span class="cl">  selector:
 </span></span><span class="line"><span class="cl">    matchLabels:
@@ -1211,25 +1342,44 @@ Metrics Server 用于收集Pod/节点的CPU，内存使用数据，是HPA的依�
 </span></span><span class="line"><span class="cl">        image: redis:7.0
 </span></span><span class="line"><span class="cl">        ports:
 </span></span><span class="line"><span class="cl">        - containerPort: <span class="m">6379</span>
-</span></span><span class="line"><span class="cl">        command: <span class="o">[</span><span class="s2">&#34;redis-server&#34;</span>, <span class="s2">&#34;--requirepass&#34;</span>, <span class="s2">&#34;redis&#34;</span><span class="o">]</span>  <span class="c1"># 密码与pig配置一致</span>
+</span></span><span class="line"><span class="cl">          name: redis
+</span></span><span class="line"><span class="cl">        command: <span class="o">[</span><span class="s2">&#34;redis-server&#34;</span>, <span class="s2">&#34;--requirepass&#34;</span>, <span class="s2">&#34;</span><span class="k">$(</span>REDIS_PASSWORD<span class="k">)</span><span class="s2">&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">        env:
+</span></span><span class="line"><span class="cl">        - name: REDIS_PASSWORD
+</span></span><span class="line"><span class="cl">          valueFrom:
+</span></span><span class="line"><span class="cl">            secretKeyRef:
+</span></span><span class="line"><span class="cl">              name: redis-secret
+</span></span><span class="line"><span class="cl">              key: password
 </span></span><span class="line"><span class="cl">        volumeMounts:
-</span></span><span class="line"><span class="cl">        - name: redis-data
+</span></span><span class="line"><span class="cl">        - name: data
 </span></span><span class="line"><span class="cl">          mountPath: /data
-</span></span><span class="line"><span class="cl">      volumes:
-</span></span><span class="line"><span class="cl">      - name: redis-data
-</span></span><span class="line"><span class="cl">        persistentVolumeClaim:
-</span></span><span class="line"><span class="cl">          claimName: redis-pvc
+</span></span><span class="line"><span class="cl">        livenessProbe:
+</span></span><span class="line"><span class="cl">          exec:
+</span></span><span class="line"><span class="cl">            command: <span class="o">[</span><span class="s2">&#34;redis-cli&#34;</span>, <span class="s2">&#34;-a&#34;</span>, <span class="s2">&#34;</span><span class="k">$(</span>REDIS_PASSWORD<span class="k">)</span><span class="s2">&#34;</span>, <span class="s2">&#34;ping&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">          initialDelaySeconds: <span class="m">30</span>
+</span></span><span class="line"><span class="cl">          periodSeconds: <span class="m">10</span>
+</span></span><span class="line"><span class="cl">        readinessProbe:
+</span></span><span class="line"><span class="cl">          exec:
+</span></span><span class="line"><span class="cl">            command: <span class="o">[</span><span class="s2">&#34;redis-cli&#34;</span>, <span class="s2">&#34;-a&#34;</span>, <span class="s2">&#34;</span><span class="k">$(</span>REDIS_PASSWORD<span class="k">)</span><span class="s2">&#34;</span>, <span class="s2">&#34;ping&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">          initialDelaySeconds: <span class="m">5</span>
+</span></span><span class="line"><span class="cl">          periodSeconds: <span class="m">5</span>
+</span></span><span class="line"><span class="cl">  volumeClaimTemplates:
+</span></span><span class="line"><span class="cl">  - metadata:
+</span></span><span class="line"><span class="cl">      name: data
+</span></span><span class="line"><span class="cl">    spec:
+</span></span><span class="line"><span class="cl">      accessModes: <span class="o">[</span> <span class="s2">&#34;ReadWriteOnce&#34;</span> <span class="o">]</span>
+</span></span><span class="line"><span class="cl">      storageClassName: <span class="s2">&#34;nfs-storageclass&#34;</span>
+</span></span><span class="line"><span class="cl">      resources:
+</span></span><span class="line"><span class="cl">        requests:
+</span></span><span class="line"><span class="cl">          storage: 5Gi
 </span></span><span class="line"><span class="cl">---
 </span></span><span class="line"><span class="cl">apiVersion: v1
-</span></span><span class="line"><span class="cl">kind: Service
+</span></span><span class="line"><span class="cl">kind: Secret
 </span></span><span class="line"><span class="cl">metadata:
-</span></span><span class="line"><span class="cl">  name: redis-service
-</span></span><span class="line"><span class="cl">spec:
-</span></span><span class="line"><span class="cl">  selector:
-</span></span><span class="line"><span class="cl">    app: redis
-</span></span><span class="line"><span class="cl">  ports:
-</span></span><span class="line"><span class="cl">  - port: <span class="m">6379</span>
-</span></span><span class="line"><span class="cl">    targetPort: <span class="m">6379</span>
+</span></span><span class="line"><span class="cl">  name: redis-secret
+</span></span><span class="line"><span class="cl">type: Opaque
+</span></span><span class="line"><span class="cl">data:
+</span></span><span class="line"><span class="cl">  password: <span class="nv">cmVkaXM</span><span class="o">=</span>  <span class="c1"># &#34;redis&#34;的base64编码</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p>部署redis</p>
