@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="一、k8s组件篇 Master节点:\nkube-apiserver (API服务器)\netcd (分布式存储)\nkube-scheduler (调度器)\nkube-controller-manager (控制器)\nWorker节点：\nkubelet (节点代理)\nkube-proxy (网络代理)\nContainer Runtime (容器运行时)\n1、kube-apiserver kube-apiserver的核心作用，为什么说它是k8s的中枢\n">
+<title>kubernetes秋招面试题准备</title>
+
+<link rel='canonical' href='https://Logic0528.github.io/p/kubernetes%E7%A7%8B%E6%8B%9B%E9%9D%A2%E8%AF%95%E9%A2%98%E5%87%86%E5%A4%87/'>
+
+<link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="kubernetes秋招面试题准备">
+<meta property='og:description' content="一、k8s组件篇 Master节点:\nkube-apiserver (API服务器)\netcd (分布式存储)\nkube-scheduler (调度器)\nkube-controller-manager (控制器)\nWorker节点：\nkubelet (节点代理)\nkube-proxy (网络代理)\nContainer Runtime (容器运行时)\n1、kube-apiserver kube-apiserver的核心作用，为什么说它是k8s的中枢\n">
+<meta property='og:url' content='https://Logic0528.github.io/p/kubernetes%E7%A7%8B%E6%8B%9B%E9%9D%A2%E8%AF%95%E9%A2%98%E5%87%86%E5%A4%87/'>
+<meta property='og:site_name' content='Logic'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-08-12T15:00:19&#43;08:00'/><meta property='article:modified_time' content='2025-08-12T15:00:19&#43;08:00'/>
+<meta name="twitter:title" content="kubernetes秋招面试题准备">
+<meta name="twitter:description" content="一、k8s组件篇 Master节点:\nkube-apiserver (API服务器)\netcd (分布式存储)\nkube-scheduler (调度器)\nkube-controller-manager (控制器)\nWorker节点：\nkubelet (节点代理)\nkube-proxy (网络代理)\nContainer Runtime (容器运行时)\n1、kube-apiserver kube-apiserver的核心作用，为什么说它是k8s的中枢\n">
+    <link rel="shortcut icon" href="/cloud.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/handsomeface_hu_4135fd299faf6bb3.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Logic</a></h1>
+            <h2 class="site-description">计算，为了无法计算的价值</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/524569872?spm_id_from=333.1007.0.0'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1746705815934" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1473" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M958.145721 915.770428c-7.946995 0.03-15.98499 0.723-23.840985-0.12-28.837982-3.129998-49.849969 29.619981-59.843963 64.14796-8.999994 31.094981-43.165973 46.989971-73.929953 43.798972-35.520978-3.642998-59.030963-23.961985-68.091958-56.079965-5.448997-19.416988-21.914986-34.467978-40.035975-34.347978-125.014922 0.723-236.212852 0.362-361.226774 0-14.389991-0.03-29.740981 13.756991-33.955979 30.704981-8.999994 36.362977-39.914975 59.451963-74.141953 60.023962-35.429978 0.602-66.224959-21.884986-76.549953-59.632963-4.333997-15.80399-11.649993-49.608969-26.759983-48.765969-19.446988 1.083999-39.012976 0.542-58.519963 0.211-21.311987-0.391-30.733981-8.939994-30.733981-29.168982 0.15-205.688871 0.452-411.347743 0.993999-617.035614 0.06-21.252987 8.879994-28.416982 33.382979-28.446983 100.450937-0.12 200.901874-0.06 301.353812-0.06h21.010987c0.632-1.715999 1.294999-3.461998 1.926999-5.207996-23.329985-12.251992-46.658971-24.502985-69.957957-36.784977-38.680976-20.409987-77.422952-40.757975-116.043927-61.257962-15.65299-8.307995-22.155986-20.980987-13.304992-36.694977 8.939994-15.89399 23.719985-16.856989 39.162976-8.729995 90.697943 47.83297 181.425887 95.60494 271.79283 143.94991 23.148986 12.401992 64.809959 4.966997 79.70995-15.98499 46.207971-65.139959 92.384942-130.281919 138.591914-195.453878 1.624999-2.286999 3.189998-4.664997 4.875996-6.922995C737.194859 0.21 752.15585-4.575997 765.761841 5.869996c15.74399 12.070992 13.033992 26.399984 2.919999 40.757975-18.753988 26.579983-37.506977 53.129967-56.230965 79.71095-25.947984 36.844977-51.865968 73.719954-80.67395 114.659928h26.910983c99.759938 0 199.487875-0.03 299.216813 0.03 30.462981 0.03 35.159978 4.635997 35.189978 34.255979 0.3 202.166874 0.571 404.333747 0.752 606.499621 0.03 28.898982-5.297997 33.805979-35.700978 33.985979z m-149.909906 60.475962c15.95499-1.053999 23.539985-43.316973 28.386982-59.301963h-60.324962c5.929996 17.579989 14.147991 60.505962 31.93798 59.301963z m-587.896633 0.03c17.669989 1.083999 26.007984-41.631974 31.275981-59.180963h-59.421963c4.033997 16.52599 12.341992 58.217964 28.145982 59.179963z m712.881555-675.253578H90.357264v571.942642h842.863473V301.022812zM150.562226 417.879739c0.06-27.874983 13.515992-55.117966 41.570974-55.147966 214.117866-0.03 411.196743-1.564999 625.314609-1.504999 28.475982 0 55.477965 29.078982 55.567965 56.652965 0.362 132.991917-0.21 235.339853 0 368.33077 0.06 28.416982-25.706984 56.621965-55.567965 56.652964-106.742933 0.06-198.945876 0-305.658809 0-106.711933 0-198.915876 0.06-305.657809 0-31.065981-0.03-55.599965-26.038984-55.568965-56.652964 0.15-132.329917-0.24-236.001852 0-368.33077z m671.18958 364.206772c0-125.736921-4.303997-241.119849-4.303997-364.206772H206.130191c0 125.013922-0.723 240.33585-0.722999 364.206772h616.343614zM379.580083 491.209693c1.745999-0.783 3.912998-0.632 11.197993-1.685999 4.244997 4.153997 14.959991 9.873994 16.10499 17.037989 1.293999 8.367995-3.190998 22.967986-9.662994 26.249984-39.553975 20.076987-80.19195 38.168976-120.919925 55.899965-12.402992 5.386997-26.039984 1.323999-29.199981-11.920992-2.076999-8.669995 1.655999-25.135984 7.886995-28.265983 40.757975-20.619987 82.870948-38.591976 124.592922-57.314964z m12.431992 134.195916c7.705995-0.271 17.669989 10.384994 23.239985 18.512989 4.453997 6.471996 2.587998 16.826989 5.718997 24.652984 5.929996 14.900991 17.097989 29.079982 33.593979 25.586984 12.190992-2.557998 23.329985-14.749991 32.47998-24.863984 4.514997-4.996997 3.762998-14.869991 4.846997-22.606986 2.046999-14.569991 10.655993-23.539985 25.044984-23.178986 13.153992 0.331 21.702986 8.277995 23.389985 22.516986 1.082999 8.999994 1.323999 20.167987 6.711996 26.158984 8.609995 9.571994 21.010987 21.130987 32.11998 21.492986 10.052994 0.33 22.274986-11.829993 30.191981-21.221986 5.267997-6.231996 4.966997-17.248989 6.621996-26.249984 2.679998-14.357991 10.987993-23.087986 25.857984-21.943986 14.779991 1.143999 22.546986 10.655993 21.974986 25.496984-1.414999 37.656976-16.37599 68.270957-51.655968 85.068947-32.870979 15.68299-63.57596 8.939994-90.486943-15.171991-1.444999-1.293999-3.190998-2.227999-4.996997-3.461998-8.187995 5.689996-15.77399 12.281992-24.472985 16.82699-28.446982 14.839991-56.923964 13.606991-83.172948-4.634997-28.957982-20.168987-41.871974-49.548969-39.282975-83.714948 0.541-7.404995 14.267991-18.993988 22.274986-19.264988z m209.993869-135.941915c6.982996-12.221992 19.385988-15.56299 30.97498-8.969994 46.025971 26.218984 91.540943 53.339967 136.754915 80.853949 5.417997 3.280998 7.946995 11.167993 9.842994 13.997991 0.512 22.365986-18.000989 34.526978-35.038978 24.923985-45.544972-25.676984-90.336944-52.708967-135.068916-79.82995-11.799993-7.164996-14.297991-19.055988-7.464995-30.975981z" fill="#04A7FD" p-id="1474"></path></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Logic0528?tab=repositories'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://user.qzone.qq.com/1932886533/infocenter'
+                        target="_blank"
+                        title="QQ"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1746705918430" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5751" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M824.8 613.2c-16-51.4-34.4-94.6-62.7-165.3C766.5 262.2 689.3 112 511.5 112 331.7 112 256.2 265.2 261 447.9c-28.4 70.8-46.7 113.7-62.7 165.3-34 109.5-23 154.8-14.6 155.8 18 2.2 70.1-82.4 70.1-82.4 0 49 25.2 112.9 79.8 159-26.4 8.1-85.7 29.9-71.6 53.8 11.4 19.3 196.2 12.3 249.5 6.3 53.3 6 238.1 13 249.5-6.3 14.1-23.8-45.3-45.7-71.6-53.8 54.6-46.2 79.8-110.1 79.8-159 0 0 52.1 84.6 70.1 82.4 8.5-1.1 19.5-46.4-14.5-155.8z" p-id="5752" fill="#8a8a8a"></path></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://Logic0528.github.io/en/" >English</option>
+                                
+                                    <option value="https://Logic0528.github.io/" selected>中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#一k8s组件篇">一、k8s组件篇</a>
+      <ol>
+        <li><a href="#1kube-apiserver">1、kube-apiserver</a></li>
+        <li><a href="#2etcd">2、etcd</a></li>
+        <li><a href="#3kube-scheduler">3、kube-scheduler</a></li>
+        <li><a href="#4kube-controller-manager">4、kube-controller-manager</a></li>
+        <li><a href="#5kubelet">5、kubelet</a></li>
+        <li><a href="#7container-runnertime">7、Container Runnertime</a></li>
+      </ol>
+    </li>
+    <li><a href="#二简述题">二、简述题</a>
+      <ol>
+        <li><a href="#1简述kubernetes创建一个pod的主要流程">1.<strong>简述Kubernetes创建一个Pod的主要流程</strong></a></li>
+        <li><a href="#2简述kubernetes自动扩容机制">2.<strong>简述Kubernetes自动扩容机制</strong></a></li>
+        <li><a href="#3简述kubernetes-rc的机制">3.<strong>简述Kubernetes RC的机制</strong></a></li>
+        <li><a href="#4简述kubernetes-replica-set和replication-controller之间有什么区别">4.<strong>简述Kubernetes Replica Set和Replication Controller之间有什么区别</strong></a></li>
+        <li><a href="#5简述kubernetes中什么是静态pod">5.<strong>简述Kubernetes中什么是静态Pod</strong></a></li>
+        <li><a href="#6简述kubernetes中pod的健康检查方式">6.<strong>简述Kubernetes中Pod的健康检查方式</strong></a></li>
+        <li><a href="#7简述kubernetes各模块如何与api-server通信">7.<strong>简述Kubernetes各模块如何与API Server通信</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#三网络篇">三、网络篇</a>
+      <ol>
+        <li><a href="#1简述kubernetes网络模型">1.<strong>简述Kubernetes网络模型</strong></a></li>
+        <li><a href="#2简述kubernetes-cni模型">2.<strong>简述Kubernetes CNI模型</strong></a></li>
+        <li><a href="#3简述kubernetes网络策略">3.<strong>简述Kubernetes网络策略</strong></a></li>
+        <li><a href="#4简述kubernetes网络策略原理">4.<strong>简述Kubernetes网络策略原理</strong></a></li>
+        <li><a href="#5简述kubernetes中flannel的作用">5.<strong>简述Kubernetes中flannel的作用</strong></a></li>
+        <li><a href="#6简述kubernetes-calico网络组件实现原理">6.<strong>简述Kubernetes Calico网络组件实现原理</strong></a></li>
+        <li><a href="#7简述kube-proxy的作用">7.<strong>简述kube-proxy的作用</strong></a></li>
+        <li><a href="#8简述kubernetes-service类型">8.<strong>简述Kubernetes Service类型</strong></a></li>
+        <li><a href="#9简述kubernetes-service分发后端的策略">9.<strong>简述Kubernetes Service分发后端的策略</strong></a></li>
+        <li><a href="#10简述kubernetes外部如何访问集群内的服务">10.<strong>简述Kubernetes外部如何访问集群内的服务</strong></a></li>
+        <li><a href="#11简述kubernetes-ingress">11.<strong>简述Kubernetes ingress</strong></a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/kubernetes%E7%A7%8B%E6%8B%9B%E9%9D%A2%E8%AF%95%E9%A2%98%E5%87%86%E5%A4%87/">kubernetes秋招面试题准备</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-08-12</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h2 id="一k8s组件篇">一、k8s组件篇
+</h2><p><code>Master节点:</code></p>
+<p>kube-apiserver (API服务器)</p>
+<p>etcd (分布式存储)</p>
+<p>kube-scheduler (调度器)</p>
+<p>kube-controller-manager (控制器)</p>
+<p><code>Worker节点：</code></p>
+<p>kubelet (节点代理)</p>
+<p>kube-proxy (网络代理)</p>
+<p>Container Runtime (容器运行时)</p>
+<h3 id="1kube-apiserver">1、kube-apiserver
+</h3><ol>
+<li>
+<p>kube-apiserver的核心作用，为什么说它是k8s的中枢</p>
+<ul>
+<li>
+<p>kube-apiserver是k8s所有组件的统一接口，负责接收，验证和处理所有客户端请求（如kubectl命令，其他组件通信），并将集群状态持久化到etcd</p>
+</li>
+<li>
+<p>之所以称为中枢，是因为所有组件均通过apiserver交互，而非直接通信，它是集群数据的唯一入口</p>
+</li>
+</ul>
+</li>
+<li>
+<p>kube-apiserver如何处理客户端请求（如kubectl命令）？是否支持高可用部署？如何实现 多实例 + 负载均衡？</p>
+<ul>
+<li>
+<p>接收请求&ndash;&gt;依次经过认证(Authentication,验证请求者身份，token，证书)&ndash;&gt;授权(Authorization,验证请求者权限，如RBAC规则)&ndash;&gt;准入控制(Admission Control,修改或拒绝请求，如资源限制检查)&ndash;&gt;验证通过后，将数据写入etcd,并返回结果</p>
+</li>
+<li>
+<p>支持高可用部署：通过多实例 + 负载均衡实现（如HAProxy），多个apiserver实例共享etcd集群，负载均衡器分发请求，避免单点故障</p>
+</li>
+</ul>
+</li>
+<li>
+<p>kube-apiserver如何保证API调用的安全性？</p>
+<ul>
+<li>
+<p>认证：支持客户端证书，用户名密码等方式，验证请求者身份</p>
+</li>
+<li>
+<p>授权：通过RBAC（基于角色的访问控制）等机制，检查请求者是否有权限执行操作；</p>
+</li>
+</ul>
+</li>
+<li>
+<p>API Server的API版本有哪些？不同版本的区别是什么？如何应对高并发请求？</p>
+<ul>
+<li>
+<p>API版本：分为alpha(测试版，可能删除)，beta(测试版，功能基本稳定)，stable(稳定版，如v1,apps/v1)，不同版本对应资源的功能成熟度。</p>
+</li>
+<li>
+<p>高并发优化：通过缓存如etcd缓存，减少重复查询，支持请求限流防止过载，可水平扩展apiserver实例分担压力</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="2etcd">2、etcd
+</h3><ol>
+<li>
+<p>etcd在k8s中存储什么数据？为什么选择etcd作为存储后端？</p>
+<ul>
+<li>
+<p>存储k8s集群的所有核心机制，包括Pod,Service,Deployment等资源的定义和状态，以及集群配置（如RBAC规则）</p>
+</li>
+<li>
+<p>选择etcd原因：分布式一致性，基于Raft协议，保持数据多副本一致，强一致性读写，高可用（集群部署），支持事务和监听机制（适合实时同步集群状态）</p>
+</li>
+</ul>
+</li>
+<li>
+<p>etcd是单节点还是分布式的？如何部署etcd集群保证高可用？</p>
+<ul>
+<li>
+<p>etcd是分布式存储，需部署集群</p>
+</li>
+<li>
+<p>Raft协议作用：通过领导者选举，保证集群有一个主节点Leader处理写请求，从节点同步数据，若Leader故障，重新选举新Leader，确保数据不丢失且一致</p>
+</li>
+</ul>
+</li>
+<li>
+<p>如何备份和恢复etcd数据？数据增长过快怎么办？</p>
+<ul>
+<li>备份：使用etcdctl snapshot save &lt;备份文件&gt;需指定etcd地址和证书</li>
+<li>恢复：etcdctl snapshot restore &lt;备份文件&gt;需指定新的集群名称和数据目录。</li>
+<li>数据增长过快：启用自动压缩，定期处理过期数据，使用SSD提升读写性能</li>
+</ul>
+</li>
+<li>
+<p>etcd的读写性能对k8s集群有什么影响？如何优化？</p>
+<p>etcd性能直接影响集群响应速度，如Pod创建延迟</p>
+<p>优化方式：存储介质使用SSD，集群规模控制在3-5节点，减少Raft协议开销</p>
+</li>
+</ol>
+<h3 id="3kube-scheduler">3、kube-scheduler
+</h3><ol>
+<li>kube-scheduler的核心作用是什么？它要解决的核心问题是什么？
+<ul>
+<li>核心作用：为新创建的Pod选择最合适的Node节点</li>
+<li>解决的核心问题：在满足Pod资源需求和调度策略的前提下，优化集群资源使用率</li>
+</ul>
+</li>
+<li>详细描述Pod的调度过程，过滤阶段和打分阶段分别做什么。
+<ul>
+<li>过滤：从所有Node中排除不满足Pod要求的节点，输出可行节点列表</li>
+<li>打分：对可行节点按优先级评分，得分最高的节点被选中</li>
+<li>绑定：将Pod与选中的Node绑定，通过apiserver更新Pod的spec.nodeName字段</li>
+</ul>
+</li>
+<li>调度策略
+<ul>
+<li>节点亲和性nodeAffinity：Pod通过规则指定偏好或必须部署的Node</li>
+<li>Pod亲和性podAffinity：Pod偏好与特定Pod部署在同一拓扑域（如数据库Pod在同一机房）</li>
+<li>污点taint与容忍toleration：node通过污点排斥Pod，Pod通过容忍突破排斥</li>
+</ul>
+</li>
+</ol>
+<h3 id="4kube-controller-manager">4、kube-controller-manager
+</h3><ol>
+<li>kube-controller-manager作用是什么？它包含哪些核心控制器？
+<ul>
+<li>作用是通过控制器监测集群状态，确保实际状态与期望状态一致</li>
+<li>核心控制器包括DeploymentController,ReplicaSetController,NodeController,JobController,ServiceController</li>
+</ul>
+</li>
+<li>控制器的调谐循环是如何工作的？
+<ul>
+<li>监测：通过apiserver监听目标资源的状态变化，如Deployment的副本数</li>
+<li>对比：将实际状态与期望状态对比</li>
+<li>调谐：执行操作使实际状态接近期望状态</li>
+</ul>
+</li>
+<li>常见控制器的作用
+<ol>
+<li>DeploymentController: 管理Replicaset,通过控制ReplicaSet的数量和版本，保证Deployment的期望副本数和滚动更新</li>
+<li>NodeController: 监测Node健康状态，若Node失联</li>
+</ol>
+</li>
+</ol>
+<h3 id="5kubelet">5、kubelet
+</h3><ol>
+<li>kubelet核心作用是什么？它与Master节点的哪个组件直接交互
+<ul>
+<li>核心作用是在Node上运行Pod，并保证Pod按期望状态运行，处理Master下发到本节点的任务</li>
+<li>直接与kube-apiserver交互，定期从apiserver获取Node上的Pod定义，上报Pod和Node状态</li>
+</ul>
+</li>
+<li>kubelet如何保证Pod按照期望状态运行？
+<ul>
+<li>监听：通过apiserver的Watch机制，实时获取分配到当前Node的pod信息</li>
+<li>创建：根据Pod定义，通过容器运行时创建容器</li>
+<li>监控：持续检查Pod和容器状态，若状态异常，尝试重启</li>
+<li>上报：将Pod状态通过apiserver写入etcd</li>
+</ul>
+</li>
+<li>kubelet如何执行Pod的存活探针和就绪探针？探针失败会触发什么操作？
+<ul>
+<li>存活探针livenessprobe: 检测容器是否存活，失败则触发容器重启</li>
+<li>就绪探针readnessprobe: 检测容器是否就绪，失败则将Pod从Service的端点列表中移除</li>
+<li>kubelet定期执行探针，配置periodseconds,根据结果执行对应操作</li>
+</ul>
+</li>
+<li>什么是静态Pod?kubelet如何管理静态Pod?
+<ul>
+<li>静态Pod是由kubelet直接管理的Pod,不通过apiserver,配置文件通常放在/etc/kubernetes/manifests</li>
+<li>kubelet定期扫描目录，若配置文件更新，自动重建Pod,静态Pod在apiserver中可见，但无法通过kubectl删除</li>
+<li>用途：部署Master组件，如apiserver,etcd，确保组件随Node启动而启动</li>
+</ul>
+</li>
+</ol>
+<h3 id="7container-runnertime">7、Container Runnertime
+</h3><h2 id="二简述题">二、简述题
+</h2><h3 id="1简述kubernetes创建一个pod的主要流程">1.<strong>简述Kubernetes创建一个Pod的主要流程</strong>
+</h3><p>Kubernetes中创建一个Pod涉及多个组件之间联动，主要流程如下：</p>
+<ul>
+<li>客户端提交Pod的配置信息（可以是yaml文件定义的信息）到kube-apiserver。</li>
+<li>Apiserver收到指令后，通知给controller-manager创建一个资源对象。</li>
+<li>Controller-manager通过api-server将Pod的配置信息存储到etcd数据中心中。</li>
+<li>Kube-scheduler检测到Pod信息会开始调度预选，会先过滤掉不符合Pod资源配置要求的节点，然后开始调度调优，主要是挑选出更适合运行Pod的节点，<code>然后将Pod的资源配置单发送到Node节点上的kubelet组件上。</code></li>
+<li>Kubelet根据scheduler发来的资源配置单运行Pod，运行成功后，将Pod的运行信息返回给scheduler，scheduler将返回的Pod运行状况的信息存储到etcd数据中心。</li>
+</ul>
+<h3 id="2简述kubernetes自动扩容机制">2.<strong>简述Kubernetes自动扩容机制</strong>
+</h3><p>Kubernetes使用Horizontal Pod Autoscaler（HPA）的控制器实现基于CPU使用率进行自动Pod扩缩容的功能。HPA控制器周期性地监测目标Pod的资源性能指标，并与HPA资源对象中的扩缩容条件进行对比，在满足条件时对Pod副本数量进行调整。</p>
+<p>Kubernetes中的某个Metrics Server（Heapster或自定义Metrics Server）持续采集所有Pod副本的指标数据。HPA控制器通过Metrics Server的API（Heapster的API或聚合API）获取这些数据，基于用户定义的扩缩容规则进行计算，得到目标Pod副本数量。</p>
+<p>当目标Pod副本数量与当前副本数量不同时，<strong>HPA控制器就向Pod的副本控制器（Deployment、RC或ReplicaSet）发起scale操作，调整Pod的副本数量，完成扩缩容操作</strong></p>
+<h3 id="3简述kubernetes-rc的机制">3.<strong>简述Kubernetes RC的机制</strong>
+</h3><p>Replication Controller用来管理Pod的副本，保证集群中存在指定数量的Pod副本。当定义了RC并提交至Kubernetes集群中之后，Master节点上的Controller Manager组件获悉，并同时巡检系统中当前存活的目标Pod，并确保目标Pod实例的数量刚好等于此RC的期望值，若存在过多的Pod副本在运行，系统会停止一些Pod，反之则自动创建一些Pod</p>
+<h3 id="4简述kubernetes-replica-set和replication-controller之间有什么区别">4.<strong>简述Kubernetes Replica Set和Replication Controller之间有什么区别</strong>
+</h3><p>Replica Set和Replication Controller类似，都是确保在任何给定时间运行指定数量的Pod副本。不同之处在于RS使用<strong>基于集合的选择器</strong>，而Replication Controller使用<u>基于权限的选择器</u>。</p>
+<h3 id="5简述kubernetes中什么是静态pod">5.<strong>简述Kubernetes中什么是静态Pod</strong>
+</h3><p>静态Pod是由kubelet进行管理的仅存在于特定Node的Pod上，他们不能通过API Server进行管理，无法与ReplicationController、Deployment或者DaemonSet进行关联，并且kubelet无法对他们进行健康检查。静态Pod总是由kubelet进行创建，并且总是在kubelet所在的Node上运行。</p>
+<h3 id="6简述kubernetes中pod的健康检查方式">6.<strong>简述Kubernetes中Pod的健康检查方式</strong>
+</h3><p>对Pod的健康检查可以通过两类探针来检查：LivenessProbe和ReadinessProbe。</p>
+<ul>
+<li>LivenessProbe探针：用于判断容器是否存活（running状态），如果LivenessProbe探针探测到容器不健康，则kubelet将杀掉该容器，并根据容器的重启策略做相应处理。若一个容器不包含LivenessProbe探针，kubelet认为该容器的LivenessProbe探针返回值用于是“Success”。</li>
+<li>ReadineeProbe探针：用于判断容器是否启动完成（ready状态）。如果ReadinessProbe探针探测到失败，则Pod的状态将被修改。Endpoint Controller将从Service的Endpoint中删除包含该容器所在Pod的Eenpoint。</li>
+<li>startupProbe探针：启动检查机制，应用一些启动缓慢的业务，避免业务长时间启动而被上面两类探针kill掉</li>
+</ul>
+<h3 id="7简述kubernetes各模块如何与api-server通信">7.<strong>简述Kubernetes各模块如何与API Server通信</strong>
+</h3><p>Kubernetes API Server作为集群的核心，负责集群各功能模块之间的通信。集群内的各个功能模块通过API Server将信息存入etcd，当需要获取和操作这些数据时，则通过API Server提供的REST接口（用GET、LIST或WATCH方法）来实现，从而实现各模块之间的信息交互。</p>
+<p>如kubelet进程与API Server的交互：每个Node上的kubelet每隔一个时间周期，就会调用一次API Server的REST接口报告自身状态，API Server在接收到这些信息后，会将节点状态信息更新到etcd中。</p>
+<p>如kube-controller-manager进程与API Server的交互：kube-controller-manager中的Node Controller模块通过API Server提供的Watch接口实时监控Node的信息，并做相应处理。</p>
+<p>如kube-scheduler进程与API Server的交互：Scheduler通过API Server的Watch接口监听到新建Pod副本的信息后，会检索所有符合该Pod要求的Node列表，开始执行Pod调度逻辑，在调度成功后将Pod绑定到目标节点上。</p>
+<p><strong>简述Kubernetes kubelet监控Worker节点资源是使用什么组件来实现的</strong></p>
+<p>kubelet使用cAdvisor对worker节点资源进行监控。在Kubernetes系统中，cAdvisor已被默认集成到kubelet组件内，当kubelet服务启动时，它会自动启动cAdvisor服务，然后cAdvisor会实时采集所在节点的性能指标及在节点上运行的容器的性能指标。</p>
+<h2 id="三网络篇">三、网络篇
+</h2><h3 id="1简述kubernetes网络模型">1.<strong>简述Kubernetes网络模型</strong>
+</h3><p>Kubernetes网络模型中每个Pod都拥有一个独立的IP地址，并假定所有Pod都在一个可以直接连通的、扁平的网络空间中。所以不管它们是否运行在同一个Node（宿主机）中，都要求它们可以直接通过对方的IP进行访问。设计这个原则的原因是，用户不需要额外考虑如何建立Pod之间的连接，也不需要考虑如何将容器端口映射到主机端口等问题。</p>
+<p>同时为每个Pod都设置一个IP地址的模型使得同一个Pod内的不同容器会共享同一个网络命名空间，也就是同一个Linux网络协议栈。这就意味着同一个Pod内的容器可以通过localhost来连接对方的端口。</p>
+<p>在Kubernetes的集群里，IP是以Pod为单位进行分配的。一个Pod内部的所有容器共享一个网络堆栈（相当于一个网络命名空间，它们的IP地址、网络设备、配置等都是共享的）。</p>
+<h3 id="2简述kubernetes-cni模型">2.<strong>简述Kubernetes CNI模型</strong>
+</h3><p>CNI提供了一种应用容器的插件化网络解决方案，定义对容器网络进行操作和配置的规范，通过插件的形式对CNI接口进行实现。CNI仅关注在创建容器时分配网络资源，和在销毁容器时删除网络资源。在CNI模型中只涉及两个概念：容器和网络。</p>
+<ul>
+<li>容器（Container）：是拥有独立Linux网络命名空间的环境，例如使用Docker或rkt创建的容器。容器需要拥有自己的Linux网络命名空间，这是加入网络的必要条件。</li>
+<li>网络（Network）：表示可以互连的一组实体，这些实体拥有各自独立、唯一的IP地址，可以是容器、物理机或者其他网络设备（比如路由器）等。</li>
+</ul>
+<p>对容器网络的设置和操作都通过插件（Plugin）进行具体实现，CNI插件包括两种类型：CNI Plugin和IPAM（IP Address Management）Plugin。CNI Plugin负责为容器配置网络资源，IPAM Plugin负责对容器的IP地址进行分配和管理。IPAM Plugin作为CNI Plugin的一部分，与CNI Plugin协同工作。</p>
+<h3 id="3简述kubernetes网络策略">3.<strong>简述Kubernetes网络策略</strong>
+</h3><p>为实现细粒度的容器间网络访问隔离策略，Kubernetes引入Network Policy。</p>
+<p>Network Policy的主要功能是对Pod间的网络通信进行限制和准入控制，设置允许访问或禁止访问的客户端Pod列表。Network Policy定义网络策略，配合策略控制器（Policy Controller）进行策略的实现。</p>
+<h3 id="4简述kubernetes网络策略原理">4.<strong>简述Kubernetes网络策略原理</strong>
+</h3><p>Network Policy的工作原理主要为：policy controller需要实现一个API Listener，监听用户设置的Network Policy定义，并将网络访问规则通过各Node的Agent进行实际设置（Agent则需要通过CNI网络插件实现）。</p>
+<h3 id="5简述kubernetes中flannel的作用">5.<strong>简述Kubernetes中flannel的作用</strong>
+</h3><p>Flannel可以用于Kubernetes底层网络的实现，主要作用有：</p>
+<ul>
+<li>它能协助Kubernetes，给每一个Node上的Docker容器都分配互相不冲突的IP地址。</li>
+<li>它能在这些IP地址之间建立一个覆盖网络（Overlay Network），通过这个覆盖网络，将数据包原封不动地传递到目标容器内。</li>
+</ul>
+<h3 id="6简述kubernetes-calico网络组件实现原理">6.<strong>简述Kubernetes Calico网络组件实现原理</strong>
+</h3><p>Calico是一个基于BGP的纯三层的网络方案，与OpenStack、Kubernetes、AWS、GCE等云平台都能够良好地集成。</p>
+<p>Calico在每个计算节点都利用Linux Kernel实现了一个高效的vRouter来负责数据转发。每个vRouter都通过BGP协议把在本节点上运行的容器的路由信息向整个Calico网络广播，并自动设置到达其他节点的路由转发规则。</p>
+<p>Calico保证所有容器之间的数据流量都是通过IP路由的方式完成互联互通的。Calico节点组网时可以直接利用数据中心的网络结构（L2或者L3），不需要额外的NAT、隧道或者Overlay Network，没有额外的封包解包，能够节约CPU运算，提高网络效率。</p>
+<h3 id="7简述kube-proxy的作用">7.<strong>简述kube-proxy的作用</strong>
+</h3><p>kube-proxy运行在所有节点上，它监听apiserver中service和endpoint的变化情况，创建路由规则以提供服务IP和负载均衡功能。简单理解此进程是Service的透明代理兼负载均衡器，其核心功能是将到某个Service的访问请求转发到后端的多个Pod实例上。</p>
+<h3 id="8简述kubernetes-service类型">8.<strong>简述Kubernetes Service类型</strong>
+</h3><p>通过创建Service，可以为一组具有相同功能的容器应用提供一个统一的入口地址，并且将请求负载分发到后端的各个容器应用上。其主要类型有：</p>
+<ul>
+<li>ClusterIP：虚拟的服务IP地址，该地址用于Kubernetes集群内部的Pod访问，在Node上kube-proxy通过设置的iptables规则进行转发；</li>
+<li>NodePort：使用宿主机的端口，使能够访问各Node的外部客户端通过Node的IP地址和端口号就能访问服务；</li>
+<li>LoadBalancer：使用外接负载均衡器完成到服务的负载分发，需要在spec.status.loadBalancer字段指定外部负载均衡器的IP地址，通常用于公有云。</li>
+</ul>
+<h3 id="9简述kubernetes-service分发后端的策略">9.<strong>简述Kubernetes Service分发后端的策略</strong>
+</h3><p>Service负载分发的策略有：RoundRobin和SessionAffinity</p>
+<ul>
+<li>RoundRobin：默认为轮询模式，即轮询将请求转发到后端的各个Pod上。</li>
+<li>SessionAffinity：基于客户端IP地址进行会话保持的模式，即第1次将某个客户端发起的请求转发到后端的某个Pod上，之后从相同的客户端发起的请求都将被转发到后端相同的Pod上。</li>
+</ul>
+<h3 id="10简述kubernetes外部如何访问集群内的服务">10.<strong>简述Kubernetes外部如何访问集群内的服务</strong>
+</h3><p>对于Kubernetes，集群外的客户端默认情况，无法通过Pod的IP地址或者Service的虚拟IP地址：虚拟端口号进行访问。通常可以通过以下方式进行访问Kubernetes集群内的服务：</p>
+<ul>
+<li>映射Pod到物理机：将Pod端口号映射到宿主机，即在Pod中采用hostPort方式，以使客户端应用能够通过物理机访问容器应用。</li>
+<li>映射Service到物理机：将Service端口号映射到宿主机，即在Service中采用nodePort方式，以使客户端应用能够通过物理机访问容器应用。</li>
+<li>映射Sercie到LoadBalancer：通过设置LoadBalancer映射到云服务商提供的LoadBalancer地址。这种用法仅用于在公有云服务提供商的云平台上设置Service的场景。</li>
+</ul>
+<h3 id="11简述kubernetes-ingress">11.<strong>简述Kubernetes ingress</strong>
+</h3><p>Kubernetes的Ingress资源对象，用于将不同URL的访问请求转发到后端不同的Service，以实现HTTP层的业务路由机制。</p>
+<p>Kubernetes使用了Ingress策略和Ingress Controller，两者结合并实现了一个完整的Ingress负载均衡器。使用Ingress进行负载分发时，Ingress Controller基于Ingress规则将客户端请求直接转发到Service对应的后端Endpoint（Pod）上，从而跳过kube-proxy的转发功能，kube-proxy不再起作用，全过程为：ingress controller + ingress 规则 &mdash;-&gt; services。</p>
+<p>同时当Ingress Controller提供的是对外服务，则实际上实现的是边缘路由器的功能。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="Logic0528/Logic0528.github.io"
+    data-repo-id="R_kgDOOmnGCw"
+    data-category="Q&amp;A"
+    data-category-id="DIC_kwDOOmnGC84CqC7N"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="lightTheme"
+    data-lang="en"
+    data-loading=""
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('lightTheme');
+            } else {
+                setGiscusTheme('darkTheme');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Logic
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
