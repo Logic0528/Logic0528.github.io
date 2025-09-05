@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="相关名词概念 cpu: 中央处理器,通用计算中心，负责系统控制，逻辑判断和复杂任务调度 gpu: 图形处理器，专攻大规模并行计算，最初为图形渲染设计，现已成为通用并行计算主力 npu: 神经网络处理器，专为深度学习设计的加速器，优化矩阵乘加等AI运算 Altas 800: 华为推出的一系列AI服务器产品，包括训练服务器和推理服务器。昇腾是华为的AI处理器系列，Altas是基于昇腾处理器构建的AI硬件产品系列 H200,H100,H20: 英伟达推出的AI芯片，H20可以说是专为中国市场设计 ECC: Error-Correcting Code,错误校验与纠正，一种数据容错技术，用于内存，硬盘，缓存等存储或数据传输场景 MCU: Micro Control Unit,微控制单元 算力切分:将物理服务器，集群或芯片等算力资源，按照一定规则或需求分割正多个独立的，可分配的算力单元，以便更高效的满足不同任务对算力的差异化需求 HCCN:Huawei Collective Communication Network,华为集合通信网络，专为昇腾AI集群设计的高性能集合通信技术与协议栈，解决多卡，多服务器间的高效数据交互问题，支撑大模型训练，分布式推理等需要大规模算力协同的场景 依赖昇腾专用通信硬件：Altas 800训练服务器通常搭载支持Pcle4.0/5.0,RocE的网卡或内置通信模块 npu-smi: 华为开发的NPU系统管理工具，主要用于收集设备信息，查看健康状态，配置设备参数等 npu-smi info 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 npu-smi info # 打印信息说明 Chip:芯片id Device:芯片编号 Health:芯片的健康状态 Power:芯片功率 Temp:芯片温度 AICore:AICore占用率 Memory-Usage:内存占比 npu-smi info -h | --help # 显示信息查询命令的帮助信息。 npu-smi info -l # 查询所有npu设备，NPU ID即为后面的-i id npu-smi info -m # 查询所有芯片映射关系 npu-smi info -t borad -i id # 查询指定NPU的详细信息 # 打印信息说明 Model:产品型号 Manufacturer:生产厂家 Software Version:NPU驱动版本 Firmware Version:NPU固件版本 Compatibility:NPU驱动和NPU固件兼容性 Chip Count:芯片个数 npu-smi info -t borad -i id -c chip_id # 查询指定芯片信息 npu-smi info -t common -i id # 查询所有芯片常用信息 npu-smi info -t flash -i id # 查询所有芯片的闪存信息，同理指定芯片后面加上-c chip_id, flash换成memory既是查询内存信息，换成temp就是温度，power就是功率，不再赘述 # flash memory:闪存,非易失性存储器，没有电源供应下能长期保存数据 npu-smi info -t usages -i id # 查询所有芯片统计信息 npu-smi info -t ssh-enable -i id # ssh使能:设备的ssh远程管理权限，true or false npu-smi info watch # 查询所有设备上所有芯片的监测数据 npu-smi info watch -i id # 查询指定设备上所有芯片的监测数据 npu-smi info watch -i id -c chip_id -d delay_second -s watch_type # delay_seconds 每轮查询延迟时长，单位为秒。watch_type 检测类型，p代表功率，t代表温度等等 npu-smi set 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 npu-smi set -h | --help # 显示配置命令的帮助信息 npu-smi set -t collet-log -i id # 收集MCU的日志，收集的日志放在/run/mcu_log目录下 npu-smi set -t reset -i id # 复位标卡，用于重置指定ID的昇腾NPU设备 npu-smi set -t mcu-monitor -i id -c chip_id -d value # 设置MCU监测状态, 0-false 1-true npu-smi set -t disk-power -i id -c chip_id -d vale # 设置机械硬盘上下电, 0-下电,切断机械硬盘电源，使其停止工作；1-上电，接通电源，进入工作状态 npu-smi set -t ssh-enable -i id -d value # 配置所有芯片的ssh使能状态，配置所有芯片ssh使能状态后，需要用户手动复位标卡生效配置，配置ECC使能状态ecc-enable同理 npu-smi set -t license -i id -f &#34;license&#34; # 配置用户的证书。证书只能配置一次，否则会配置失败 npu-smi set -t ip -i id -c chip_id -s ipstring # 设置AI芯片的IP信息，192.168.5.199/255.255.255.0 npu-smi set -t mac-addr -i id -c chip_id -d mac_id -s mac_string # 设置执行芯片mac地址 npu-smi set -t nve-level -i id -c chip_id -d value # 设置指定芯片的算力等级,0-low 1-middle 2-high 3-full npu-smi set -t aicpu-config -i id -c chip_id -d value # 设置指定芯片的AI CPU数量 npu-smi upgrade 1 2 3 4 5 6 7 8 9 10 npu-smi upgrade -h | --help # 显示升级命令的帮助信息 #item有三种类型, mcu bootloader vrd,不同命令支持类型不一样 npu-smi upgrade -q item -i id # 查询固件的升级状态 npu-smi upgrade -b item -i id # 查询固件的版本信息 npu-smi upgrade -t item -i id -f file_path # 启动固件升级 npu-smi upgrade -a item -i id # 在固件升级完成之后，用该命令生效固件的新版本 npu-smi clear 1 2 3 npu-smi clear -h | --help # 显示清楚命令的帮助信息 npu-smi clear -t ecc-info -i id # 清楚所有芯片ECC错误计数 算力切分 1 2 3 4 5 npu-smi info -t vnpu-mode # 查询算力切分模式,有两种模式:docker, VM, docker是容器级切分,vNPU实例作为进程级资源被分配给容器,容器内应用直接调用宿主机上的NPU驱动和运行时; VM是虚拟机级切分, 不同处约等于docker和虚拟机的区别 npu-smi info -t template-info # 查询算力切分模板信息 npu-smi set -t vnpu-mode -d mode # 设置算力切分模式, 0-docker 1-VM ">
+<title>昇腾NPU基础知识</title>
+
+<link rel='canonical' href='https://Logic0528.github.io/p/%E6%98%87%E8%85%BEnpu%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/'>
+
+<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="昇腾NPU基础知识">
+<meta property='og:description' content="相关名词概念 cpu: 中央处理器,通用计算中心，负责系统控制，逻辑判断和复杂任务调度 gpu: 图形处理器，专攻大规模并行计算，最初为图形渲染设计，现已成为通用并行计算主力 npu: 神经网络处理器，专为深度学习设计的加速器，优化矩阵乘加等AI运算 Altas 800: 华为推出的一系列AI服务器产品，包括训练服务器和推理服务器。昇腾是华为的AI处理器系列，Altas是基于昇腾处理器构建的AI硬件产品系列 H200,H100,H20: 英伟达推出的AI芯片，H20可以说是专为中国市场设计 ECC: Error-Correcting Code,错误校验与纠正，一种数据容错技术，用于内存，硬盘，缓存等存储或数据传输场景 MCU: Micro Control Unit,微控制单元 算力切分:将物理服务器，集群或芯片等算力资源，按照一定规则或需求分割正多个独立的，可分配的算力单元，以便更高效的满足不同任务对算力的差异化需求 HCCN:Huawei Collective Communication Network,华为集合通信网络，专为昇腾AI集群设计的高性能集合通信技术与协议栈，解决多卡，多服务器间的高效数据交互问题，支撑大模型训练，分布式推理等需要大规模算力协同的场景 依赖昇腾专用通信硬件：Altas 800训练服务器通常搭载支持Pcle4.0/5.0,RocE的网卡或内置通信模块 npu-smi: 华为开发的NPU系统管理工具，主要用于收集设备信息，查看健康状态，配置设备参数等 npu-smi info 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 npu-smi info # 打印信息说明 Chip:芯片id Device:芯片编号 Health:芯片的健康状态 Power:芯片功率 Temp:芯片温度 AICore:AICore占用率 Memory-Usage:内存占比 npu-smi info -h | --help # 显示信息查询命令的帮助信息。 npu-smi info -l # 查询所有npu设备，NPU ID即为后面的-i id npu-smi info -m # 查询所有芯片映射关系 npu-smi info -t borad -i id # 查询指定NPU的详细信息 # 打印信息说明 Model:产品型号 Manufacturer:生产厂家 Software Version:NPU驱动版本 Firmware Version:NPU固件版本 Compatibility:NPU驱动和NPU固件兼容性 Chip Count:芯片个数 npu-smi info -t borad -i id -c chip_id # 查询指定芯片信息 npu-smi info -t common -i id # 查询所有芯片常用信息 npu-smi info -t flash -i id # 查询所有芯片的闪存信息，同理指定芯片后面加上-c chip_id, flash换成memory既是查询内存信息，换成temp就是温度，power就是功率，不再赘述 # flash memory:闪存,非易失性存储器，没有电源供应下能长期保存数据 npu-smi info -t usages -i id # 查询所有芯片统计信息 npu-smi info -t ssh-enable -i id # ssh使能:设备的ssh远程管理权限，true or false npu-smi info watch # 查询所有设备上所有芯片的监测数据 npu-smi info watch -i id # 查询指定设备上所有芯片的监测数据 npu-smi info watch -i id -c chip_id -d delay_second -s watch_type # delay_seconds 每轮查询延迟时长，单位为秒。watch_type 检测类型，p代表功率，t代表温度等等 npu-smi set 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 npu-smi set -h | --help # 显示配置命令的帮助信息 npu-smi set -t collet-log -i id # 收集MCU的日志，收集的日志放在/run/mcu_log目录下 npu-smi set -t reset -i id # 复位标卡，用于重置指定ID的昇腾NPU设备 npu-smi set -t mcu-monitor -i id -c chip_id -d value # 设置MCU监测状态, 0-false 1-true npu-smi set -t disk-power -i id -c chip_id -d vale # 设置机械硬盘上下电, 0-下电,切断机械硬盘电源，使其停止工作；1-上电，接通电源，进入工作状态 npu-smi set -t ssh-enable -i id -d value # 配置所有芯片的ssh使能状态，配置所有芯片ssh使能状态后，需要用户手动复位标卡生效配置，配置ECC使能状态ecc-enable同理 npu-smi set -t license -i id -f &#34;license&#34; # 配置用户的证书。证书只能配置一次，否则会配置失败 npu-smi set -t ip -i id -c chip_id -s ipstring # 设置AI芯片的IP信息，192.168.5.199/255.255.255.0 npu-smi set -t mac-addr -i id -c chip_id -d mac_id -s mac_string # 设置执行芯片mac地址 npu-smi set -t nve-level -i id -c chip_id -d value # 设置指定芯片的算力等级,0-low 1-middle 2-high 3-full npu-smi set -t aicpu-config -i id -c chip_id -d value # 设置指定芯片的AI CPU数量 npu-smi upgrade 1 2 3 4 5 6 7 8 9 10 npu-smi upgrade -h | --help # 显示升级命令的帮助信息 #item有三种类型, mcu bootloader vrd,不同命令支持类型不一样 npu-smi upgrade -q item -i id # 查询固件的升级状态 npu-smi upgrade -b item -i id # 查询固件的版本信息 npu-smi upgrade -t item -i id -f file_path # 启动固件升级 npu-smi upgrade -a item -i id # 在固件升级完成之后，用该命令生效固件的新版本 npu-smi clear 1 2 3 npu-smi clear -h | --help # 显示清楚命令的帮助信息 npu-smi clear -t ecc-info -i id # 清楚所有芯片ECC错误计数 算力切分 1 2 3 4 5 npu-smi info -t vnpu-mode # 查询算力切分模式,有两种模式:docker, VM, docker是容器级切分,vNPU实例作为进程级资源被分配给容器,容器内应用直接调用宿主机上的NPU驱动和运行时; VM是虚拟机级切分, 不同处约等于docker和虚拟机的区别 npu-smi info -t template-info # 查询算力切分模板信息 npu-smi set -t vnpu-mode -d mode # 设置算力切分模式, 0-docker 1-VM ">
+<meta property='og:url' content='https://Logic0528.github.io/p/%E6%98%87%E8%85%BEnpu%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/'>
+<meta property='og:site_name' content='Logic'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-08-31T11:00:00&#43;08:00'/><meta property='article:modified_time' content='2025-08-31T11:00:00&#43;08:00'/>
+<meta name="twitter:title" content="昇腾NPU基础知识">
+<meta name="twitter:description" content="相关名词概念 cpu: 中央处理器,通用计算中心，负责系统控制，逻辑判断和复杂任务调度 gpu: 图形处理器，专攻大规模并行计算，最初为图形渲染设计，现已成为通用并行计算主力 npu: 神经网络处理器，专为深度学习设计的加速器，优化矩阵乘加等AI运算 Altas 800: 华为推出的一系列AI服务器产品，包括训练服务器和推理服务器。昇腾是华为的AI处理器系列，Altas是基于昇腾处理器构建的AI硬件产品系列 H200,H100,H20: 英伟达推出的AI芯片，H20可以说是专为中国市场设计 ECC: Error-Correcting Code,错误校验与纠正，一种数据容错技术，用于内存，硬盘，缓存等存储或数据传输场景 MCU: Micro Control Unit,微控制单元 算力切分:将物理服务器，集群或芯片等算力资源，按照一定规则或需求分割正多个独立的，可分配的算力单元，以便更高效的满足不同任务对算力的差异化需求 HCCN:Huawei Collective Communication Network,华为集合通信网络，专为昇腾AI集群设计的高性能集合通信技术与协议栈，解决多卡，多服务器间的高效数据交互问题，支撑大模型训练，分布式推理等需要大规模算力协同的场景 依赖昇腾专用通信硬件：Altas 800训练服务器通常搭载支持Pcle4.0/5.0,RocE的网卡或内置通信模块 npu-smi: 华为开发的NPU系统管理工具，主要用于收集设备信息，查看健康状态，配置设备参数等 npu-smi info 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 npu-smi info # 打印信息说明 Chip:芯片id Device:芯片编号 Health:芯片的健康状态 Power:芯片功率 Temp:芯片温度 AICore:AICore占用率 Memory-Usage:内存占比 npu-smi info -h | --help # 显示信息查询命令的帮助信息。 npu-smi info -l # 查询所有npu设备，NPU ID即为后面的-i id npu-smi info -m # 查询所有芯片映射关系 npu-smi info -t borad -i id # 查询指定NPU的详细信息 # 打印信息说明 Model:产品型号 Manufacturer:生产厂家 Software Version:NPU驱动版本 Firmware Version:NPU固件版本 Compatibility:NPU驱动和NPU固件兼容性 Chip Count:芯片个数 npu-smi info -t borad -i id -c chip_id # 查询指定芯片信息 npu-smi info -t common -i id # 查询所有芯片常用信息 npu-smi info -t flash -i id # 查询所有芯片的闪存信息，同理指定芯片后面加上-c chip_id, flash换成memory既是查询内存信息，换成temp就是温度，power就是功率，不再赘述 # flash memory:闪存,非易失性存储器，没有电源供应下能长期保存数据 npu-smi info -t usages -i id # 查询所有芯片统计信息 npu-smi info -t ssh-enable -i id # ssh使能:设备的ssh远程管理权限，true or false npu-smi info watch # 查询所有设备上所有芯片的监测数据 npu-smi info watch -i id # 查询指定设备上所有芯片的监测数据 npu-smi info watch -i id -c chip_id -d delay_second -s watch_type # delay_seconds 每轮查询延迟时长，单位为秒。watch_type 检测类型，p代表功率，t代表温度等等 npu-smi set 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 npu-smi set -h | --help # 显示配置命令的帮助信息 npu-smi set -t collet-log -i id # 收集MCU的日志，收集的日志放在/run/mcu_log目录下 npu-smi set -t reset -i id # 复位标卡，用于重置指定ID的昇腾NPU设备 npu-smi set -t mcu-monitor -i id -c chip_id -d value # 设置MCU监测状态, 0-false 1-true npu-smi set -t disk-power -i id -c chip_id -d vale # 设置机械硬盘上下电, 0-下电,切断机械硬盘电源，使其停止工作；1-上电，接通电源，进入工作状态 npu-smi set -t ssh-enable -i id -d value # 配置所有芯片的ssh使能状态，配置所有芯片ssh使能状态后，需要用户手动复位标卡生效配置，配置ECC使能状态ecc-enable同理 npu-smi set -t license -i id -f &#34;license&#34; # 配置用户的证书。证书只能配置一次，否则会配置失败 npu-smi set -t ip -i id -c chip_id -s ipstring # 设置AI芯片的IP信息，192.168.5.199/255.255.255.0 npu-smi set -t mac-addr -i id -c chip_id -d mac_id -s mac_string # 设置执行芯片mac地址 npu-smi set -t nve-level -i id -c chip_id -d value # 设置指定芯片的算力等级,0-low 1-middle 2-high 3-full npu-smi set -t aicpu-config -i id -c chip_id -d value # 设置指定芯片的AI CPU数量 npu-smi upgrade 1 2 3 4 5 6 7 8 9 10 npu-smi upgrade -h | --help # 显示升级命令的帮助信息 #item有三种类型, mcu bootloader vrd,不同命令支持类型不一样 npu-smi upgrade -q item -i id # 查询固件的升级状态 npu-smi upgrade -b item -i id # 查询固件的版本信息 npu-smi upgrade -t item -i id -f file_path # 启动固件升级 npu-smi upgrade -a item -i id # 在固件升级完成之后，用该命令生效固件的新版本 npu-smi clear 1 2 3 npu-smi clear -h | --help # 显示清楚命令的帮助信息 npu-smi clear -t ecc-info -i id # 清楚所有芯片ECC错误计数 算力切分 1 2 3 4 5 npu-smi info -t vnpu-mode # 查询算力切分模式,有两种模式:docker, VM, docker是容器级切分,vNPU实例作为进程级资源被分配给容器,容器内应用直接调用宿主机上的NPU驱动和运行时; VM是虚拟机级切分, 不同处约等于docker和虚拟机的区别 npu-smi info -t template-info # 查询算力切分模板信息 npu-smi set -t vnpu-mode -d mode # 设置算力切分模式, 0-docker 1-VM ">
+    <link rel="shortcut icon" href="/cloud.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/handsomeface_hu_4135fd299faf6bb3.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Logic</a></h1>
+            <h2 class="site-description">计算，为了无法计算的价值</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/524569872?spm_id_from=333.1007.0.0'
+                        target="_blank"
+                        title="Bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1746705815934" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1473" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M958.145721 915.770428c-7.946995 0.03-15.98499 0.723-23.840985-0.12-28.837982-3.129998-49.849969 29.619981-59.843963 64.14796-8.999994 31.094981-43.165973 46.989971-73.929953 43.798972-35.520978-3.642998-59.030963-23.961985-68.091958-56.079965-5.448997-19.416988-21.914986-34.467978-40.035975-34.347978-125.014922 0.723-236.212852 0.362-361.226774 0-14.389991-0.03-29.740981 13.756991-33.955979 30.704981-8.999994 36.362977-39.914975 59.451963-74.141953 60.023962-35.429978 0.602-66.224959-21.884986-76.549953-59.632963-4.333997-15.80399-11.649993-49.608969-26.759983-48.765969-19.446988 1.083999-39.012976 0.542-58.519963 0.211-21.311987-0.391-30.733981-8.939994-30.733981-29.168982 0.15-205.688871 0.452-411.347743 0.993999-617.035614 0.06-21.252987 8.879994-28.416982 33.382979-28.446983 100.450937-0.12 200.901874-0.06 301.353812-0.06h21.010987c0.632-1.715999 1.294999-3.461998 1.926999-5.207996-23.329985-12.251992-46.658971-24.502985-69.957957-36.784977-38.680976-20.409987-77.422952-40.757975-116.043927-61.257962-15.65299-8.307995-22.155986-20.980987-13.304992-36.694977 8.939994-15.89399 23.719985-16.856989 39.162976-8.729995 90.697943 47.83297 181.425887 95.60494 271.79283 143.94991 23.148986 12.401992 64.809959 4.966997 79.70995-15.98499 46.207971-65.139959 92.384942-130.281919 138.591914-195.453878 1.624999-2.286999 3.189998-4.664997 4.875996-6.922995C737.194859 0.21 752.15585-4.575997 765.761841 5.869996c15.74399 12.070992 13.033992 26.399984 2.919999 40.757975-18.753988 26.579983-37.506977 53.129967-56.230965 79.71095-25.947984 36.844977-51.865968 73.719954-80.67395 114.659928h26.910983c99.759938 0 199.487875-0.03 299.216813 0.03 30.462981 0.03 35.159978 4.635997 35.189978 34.255979 0.3 202.166874 0.571 404.333747 0.752 606.499621 0.03 28.898982-5.297997 33.805979-35.700978 33.985979z m-149.909906 60.475962c15.95499-1.053999 23.539985-43.316973 28.386982-59.301963h-60.324962c5.929996 17.579989 14.147991 60.505962 31.93798 59.301963z m-587.896633 0.03c17.669989 1.083999 26.007984-41.631974 31.275981-59.180963h-59.421963c4.033997 16.52599 12.341992 58.217964 28.145982 59.179963z m712.881555-675.253578H90.357264v571.942642h842.863473V301.022812zM150.562226 417.879739c0.06-27.874983 13.515992-55.117966 41.570974-55.147966 214.117866-0.03 411.196743-1.564999 625.314609-1.504999 28.475982 0 55.477965 29.078982 55.567965 56.652965 0.362 132.991917-0.21 235.339853 0 368.33077 0.06 28.416982-25.706984 56.621965-55.567965 56.652964-106.742933 0.06-198.945876 0-305.658809 0-106.711933 0-198.915876 0.06-305.657809 0-31.065981-0.03-55.599965-26.038984-55.568965-56.652964 0.15-132.329917-0.24-236.001852 0-368.33077z m671.18958 364.206772c0-125.736921-4.303997-241.119849-4.303997-364.206772H206.130191c0 125.013922-0.723 240.33585-0.722999 364.206772h616.343614zM379.580083 491.209693c1.745999-0.783 3.912998-0.632 11.197993-1.685999 4.244997 4.153997 14.959991 9.873994 16.10499 17.037989 1.293999 8.367995-3.190998 22.967986-9.662994 26.249984-39.553975 20.076987-80.19195 38.168976-120.919925 55.899965-12.402992 5.386997-26.039984 1.323999-29.199981-11.920992-2.076999-8.669995 1.655999-25.135984 7.886995-28.265983 40.757975-20.619987 82.870948-38.591976 124.592922-57.314964z m12.431992 134.195916c7.705995-0.271 17.669989 10.384994 23.239985 18.512989 4.453997 6.471996 2.587998 16.826989 5.718997 24.652984 5.929996 14.900991 17.097989 29.079982 33.593979 25.586984 12.190992-2.557998 23.329985-14.749991 32.47998-24.863984 4.514997-4.996997 3.762998-14.869991 4.846997-22.606986 2.046999-14.569991 10.655993-23.539985 25.044984-23.178986 13.153992 0.331 21.702986 8.277995 23.389985 22.516986 1.082999 8.999994 1.323999 20.167987 6.711996 26.158984 8.609995 9.571994 21.010987 21.130987 32.11998 21.492986 10.052994 0.33 22.274986-11.829993 30.191981-21.221986 5.267997-6.231996 4.966997-17.248989 6.621996-26.249984 2.679998-14.357991 10.987993-23.087986 25.857984-21.943986 14.779991 1.143999 22.546986 10.655993 21.974986 25.496984-1.414999 37.656976-16.37599 68.270957-51.655968 85.068947-32.870979 15.68299-63.57596 8.939994-90.486943-15.171991-1.444999-1.293999-3.190998-2.227999-4.996997-3.461998-8.187995 5.689996-15.77399 12.281992-24.472985 16.82699-28.446982 14.839991-56.923964 13.606991-83.172948-4.634997-28.957982-20.168987-41.871974-49.548969-39.282975-83.714948 0.541-7.404995 14.267991-18.993988 22.274986-19.264988z m209.993869-135.941915c6.982996-12.221992 19.385988-15.56299 30.97498-8.969994 46.025971 26.218984 91.540943 53.339967 136.754915 80.853949 5.417997 3.280998 7.946995 11.167993 9.842994 13.997991 0.512 22.365986-18.000989 34.526978-35.038978 24.923985-45.544972-25.676984-90.336944-52.708967-135.068916-79.82995-11.799993-7.164996-14.297991-19.055988-7.464995-30.975981z" fill="#04A7FD" p-id="1474"></path></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Logic0528?tab=repositories'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://user.qzone.qq.com/1932886533/infocenter'
+                        target="_blank"
+                        title="QQ"
+                        rel="me"
+                    >
+                        
+                        
+                            <?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1746705918430" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5751" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M824.8 613.2c-16-51.4-34.4-94.6-62.7-165.3C766.5 262.2 689.3 112 511.5 112 331.7 112 256.2 265.2 261 447.9c-28.4 70.8-46.7 113.7-62.7 165.3-34 109.5-23 154.8-14.6 155.8 18 2.2 70.1-82.4 70.1-82.4 0 49 25.2 112.9 79.8 159-26.4 8.1-85.7 29.9-71.6 53.8 11.4 19.3 196.2 12.3 249.5 6.3 53.3 6 238.1 13 249.5-6.3 14.1-23.8-45.3-45.7-71.6-53.8 54.6-46.2 79.8-110.1 79.8-159 0 0 52.1 84.6 70.1 82.4 8.5-1.1 19.5-46.4-14.5-155.8z" p-id="5752" fill="#8a8a8a"></path></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>归档</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>搜索</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+                    
+                        <li id="i18n-switch">  
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-language" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M4 5h7" />
+  <path d="M9 3v2c0 4.418 -2.239 8 -5 8" />
+  <path d="M5 9c-.003 2.144 2.952 3.908 6.7 4" />
+  <path d="M12 20l4 -9l4 9" />
+  <path d="M19.1 18h-6.2" />
+</svg>
+
+
+
+                            <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
+                                
+                                    <option value="https://Logic0528.github.io/en/" >English</option>
+                                
+                                    <option value="https://Logic0528.github.io/" selected>中文</option>
+                                
+                            </select>
+                        </li>
+                    
+                
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#相关名词概念">相关名词概念</a></li>
+        <li><a href="#npu-smi-华为开发的npu系统管理工具主要用于收集设备信息查看健康状态配置设备参数等">npu-smi: 华为开发的NPU系统管理工具，主要用于收集设备信息，查看健康状态，配置设备参数等</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/%E6%98%87%E8%85%BEnpu%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">昇腾NPU基础知识</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-08-31</time>
+            </div>
+        
+
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h3 id="相关名词概念">相关名词概念
+</h3><ul>
+<li>cpu: 中央处理器,通用计算中心，负责系统控制，逻辑判断和复杂任务调度</li>
+<li>gpu: 图形处理器，专攻大规模并行计算，最初为图形渲染设计，现已成为通用并行计算主力</li>
+<li>npu: 神经网络处理器，专为深度学习设计的加速器，优化矩阵乘加等AI运算</li>
+<li>Altas 800: 华为推出的一系列AI服务器产品，包括训练服务器和推理服务器。昇腾是华为的AI处理器系列，Altas是基于昇腾处理器构建的AI硬件产品系列</li>
+<li>H200,H100,H20: 英伟达推出的AI芯片，H20可以说是专为中国市场设计</li>
+<li>ECC: Error-Correcting Code,错误校验与纠正，一种数据容错技术，用于内存，硬盘，缓存等存储或数据传输场景</li>
+<li>MCU: Micro Control Unit,微控制单元</li>
+<li>算力切分:将物理服务器，集群或芯片等算力资源，按照一定规则或需求分割正多个独立的，可分配的算力单元，以便更高效的满足不同任务对算力的差异化需求</li>
+<li>HCCN:Huawei Collective Communication Network,华为集合通信网络，专为昇腾AI集群设计的高性能集合通信技术与协议栈，解决多卡，多服务器间的高效数据交互问题，支撑大模型训练，分布式推理等需要大规模算力协同的场景
+<ul>
+<li>依赖昇腾专用通信硬件：Altas 800训练服务器通常搭载支持Pcle4.0/5.0,RocE的网卡或内置通信模块</li>
+</ul>
+</li>
+</ul>
+<h3 id="npu-smi-华为开发的npu系统管理工具主要用于收集设备信息查看健康状态配置设备参数等">npu-smi: 华为开发的NPU系统管理工具，主要用于收集设备信息，查看健康状态，配置设备参数等
+</h3><ul>
+<li>npu-smi info</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npu-smi info
+</span></span><span class="line"><span class="cl"><span class="c1"># 打印信息说明</span>
+</span></span><span class="line"><span class="cl">Chip:芯片id
+</span></span><span class="line"><span class="cl">Device:芯片编号
+</span></span><span class="line"><span class="cl">Health:芯片的健康状态
+</span></span><span class="line"><span class="cl">Power:芯片功率
+</span></span><span class="line"><span class="cl">Temp:芯片温度
+</span></span><span class="line"><span class="cl">AICore:AICore占用率
+</span></span><span class="line"><span class="cl">Memory-Usage:内存占比
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi info -h <span class="p">|</span> --help   <span class="c1"># 显示信息查询命令的帮助信息。</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi info -l   <span class="c1"># 查询所有npu设备，NPU ID即为后面的-i id</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi info -m   <span class="c1"># 查询所有芯片映射关系</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi info -t borad -i id   <span class="c1"># 查询指定NPU的详细信息</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 打印信息说明</span>
+</span></span><span class="line"><span class="cl">Model:产品型号
+</span></span><span class="line"><span class="cl">Manufacturer:生产厂家
+</span></span><span class="line"><span class="cl">Software Version:NPU驱动版本
+</span></span><span class="line"><span class="cl">Firmware Version:NPU固件版本
+</span></span><span class="line"><span class="cl">Compatibility:NPU驱动和NPU固件兼容性
+</span></span><span class="line"><span class="cl">Chip Count:芯片个数
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi info -t borad -i id -c chip_id   <span class="c1"># 查询指定芯片信息</span>
+</span></span><span class="line"><span class="cl">npu-smi info -t common -i id   <span class="c1"># 查询所有芯片常用信息</span>
+</span></span><span class="line"><span class="cl">npu-smi info -t flash -i id   <span class="c1"># 查询所有芯片的闪存信息，同理指定芯片后面加上-c chip_id, flash换成memory既是查询内存信息，换成temp就是温度，power就是功率，不再赘述</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># flash memory:闪存,非易失性存储器，没有电源供应下能长期保存数据</span>
+</span></span><span class="line"><span class="cl">npu-smi info -t usages -i id   <span class="c1"># 查询所有芯片统计信息</span>
+</span></span><span class="line"><span class="cl">npu-smi info -t ssh-enable -i id   <span class="c1"># ssh使能:设备的ssh远程管理权限，true or false</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi info watch   <span class="c1"># 查询所有设备上所有芯片的监测数据</span>
+</span></span><span class="line"><span class="cl">npu-smi info watch -i id   <span class="c1"># 查询指定设备上所有芯片的监测数据</span>
+</span></span><span class="line"><span class="cl">npu-smi info watch -i id -c chip_id -d delay_second -s watch_type   <span class="c1"># delay_seconds 每轮查询延迟时长，单位为秒。watch_type 检测类型，p代表功率，t代表温度等等</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>npu-smi set</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -h <span class="p">|</span> --help   <span class="c1"># 显示配置命令的帮助信息</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -t collet-log -i id   <span class="c1"># 收集MCU的日志，收集的日志放在/run/mcu_log目录下</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -t reset -i id   <span class="c1"># 复位标卡，用于重置指定ID的昇腾NPU设备</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -t mcu-monitor -i id -c chip_id -d value   <span class="c1"># 设置MCU监测状态, 0-false 1-true</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -t disk-power -i id -c chip_id -d vale   <span class="c1"># 设置机械硬盘上下电, 0-下电,切断机械硬盘电源，使其停止工作；1-上电，接通电源，进入工作状态</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -t ssh-enable -i id -d value   <span class="c1"># 配置所有芯片的ssh使能状态，配置所有芯片ssh使能状态后，需要用户手动复位标卡生效配置，配置ECC使能状态ecc-enable同理</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -t license -i id -f <span class="s2">&#34;license&#34;</span>   <span class="c1"># 配置用户的证书。证书只能配置一次，否则会配置失败</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -t ip -i id -c chip_id -s ipstring   <span class="c1"># 设置AI芯片的IP信息，192.168.5.199/255.255.255.0</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -t mac-addr -i id -c chip_id -d mac_id -s mac_string   <span class="c1"># 设置执行芯片mac地址</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -t nve-level -i id -c chip_id -d value   <span class="c1"># 设置指定芯片的算力等级,0-low 1-middle 2-high 3-full</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"> npu-smi <span class="nb">set</span> -t aicpu-config -i id -c chip_id -d value   <span class="c1"># 设置指定芯片的AI CPU数量</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>npu-smi upgrade</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npu-smi upgrade -h <span class="p">|</span> --help   <span class="c1"># 显示升级命令的帮助信息</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#item有三种类型, mcu bootloader vrd,不同命令支持类型不一样</span>
+</span></span><span class="line"><span class="cl">npu-smi upgrade -q item -i id   <span class="c1"># 查询固件的升级状态</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi upgrade -b item -i id   <span class="c1"># 查询固件的版本信息</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi upgrade -t item -i id -f file_path   <span class="c1"># 启动固件升级</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi upgrade -a item -i id   <span class="c1"># 在固件升级完成之后，用该命令生效固件的新版本</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>npu-smi clear</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npu-smi clear -h <span class="p">|</span> --help   <span class="c1"># 显示清楚命令的帮助信息</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi clear -t ecc-info -i id   <span class="c1"># 清楚所有芯片ECC错误计数</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>算力切分</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">npu-smi info -t vnpu-mode   <span class="c1"># 查询算力切分模式,有两种模式:docker, VM, docker是容器级切分,vNPU实例作为进程级资源被分配给容器,容器内应用直接调用宿主机上的NPU驱动和运行时; VM是虚拟机级切分, 不同处约等于docker和虚拟机的区别</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi info -t template-info   <span class="c1"># 查询算力切分模板信息</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">npu-smi <span class="nb">set</span> -t vnpu-mode -d mode   <span class="c1"># 设置算力切分模式, 0-docker 1-VM</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    <script
+    src="https://giscus.app/client.js"
+    data-repo="Logic0528/Logic0528.github.io"
+    data-repo-id="R_kgDOOmnGCw"
+    data-category="Q&amp;A"
+    data-category-id="DIC_kwDOOmnGC84CqC7N"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="lightTheme"
+    data-lang="en"
+    data-loading=""
+    crossorigin="anonymous"
+    async
+></script>
+<script>
+    function setGiscusTheme(theme) {
+        let giscus = document.querySelector("iframe.giscus-frame");
+        if (giscus) {
+            giscus.contentWindow.postMessage(
+                {
+                    giscus: {
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
+                },
+                "https://giscus.app"
+            );
+        }
+    }
+
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
+        });
+        window.addEventListener("onColorSchemeChange", handler);
+
+        function handler() {
+            if (document.documentElement.dataset.scheme === "light") {
+                setGiscusTheme('lightTheme');
+            } else {
+                setGiscusTheme('darkTheme');
+            }
+        }
+    })();
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2025 Logic
+    </section>
+    
+    <section class="powerby">
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
