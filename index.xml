@@ -7,7 +7,604 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Logic</copyright>
-        <lastBuildDate>Tue, 12 Aug 2025 15:00:19 +0800</lastBuildDate><atom:link href="https://Logic0528.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 04 Sep 2025 11:00:00 +0800</lastBuildDate><atom:link href="https://Logic0528.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>RoCE带宽时延测试</title>
+        <link>https://Logic0528.github.io/p/roce%E5%B8%A6%E5%AE%BD%E6%97%B6%E5%BB%B6%E6%B5%8B%E8%AF%95/</link>
+        <pubDate>Thu, 04 Sep 2025 11:00:00 +0800</pubDate>
+        
+        <guid>https://Logic0528.github.io/p/roce%E5%B8%A6%E5%AE%BD%E6%97%B6%E5%BB%B6%E6%B5%8B%E8%AF%95/</guid>
+        <description>&lt;h1 id=&#34;roce带宽时延测试&#34;&gt;RoCE带宽时延测试
+&lt;/h1&gt;&lt;h2 id=&#34;1测试目的&#34;&gt;1.测试目的
+&lt;/h2&gt;&lt;p&gt;评估 RoCE网卡接口在 RDMA 场景下的性能表现，主要性能指标包括：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;带宽（Bandwidth）：评估网卡最大吞吐能力&lt;/li&gt;
+&lt;li&gt;时延（Latency）：衡量数据包往返所需时间&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2相关名词概念解释&#34;&gt;2.相关名词概念解释
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;RoCE:RDMA over Converged Ethernet,RDMA技术在以太网上的实现&lt;/li&gt;
+&lt;li&gt;RDMA:RemoteDirect Memory Access，远程内存直接访问
+&lt;ol&gt;
+&lt;li&gt;面对高性能计算、大数据分析等IO高并发、低时延应用，现有TCP/IP软硬件架构不能满足应用的需求，这主要体现在传统的TCP/IP网络通信是通过内核发送消息，这种通信方式存在很高的数据移动和数据复制的开销。RDMA就是为了解决网络传输中服务器端数据处理的延迟而产生的。如下图，RDMA技术能直接通过网络接口访问内存数据，无需操作系统内核的介入。这允许高吞吐、低延迟的网络通信，尤其适合在大规模并行计算机集群中使用&lt;/li&gt;
+&lt;li&gt;&lt;img src=&#34;https://iqeubg8au73.feishu.cn/space/api/box/stream/download/asynccode/?code=MTc4YTBiYTEzZmY5MzA3MDkzZmFiNjY4ZjhiZjlmNmNfRnA1ZDI5RVVaa3FIaUxPbEc4TFRuQjlETFVlY1lla3pfVG9rZW46V1N1dmJRZFpZb3JlSGJ4TDl0dWNDQWNXbmJnXzE3NTcwMzkxMjE6MTc1NzA0MjcyMV9WNA&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;img&#34;
+	
+	
+&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;同轨/异轨：
+&lt;ol&gt;
+&lt;li&gt;同轨：&lt;/li&gt;
+&lt;li&gt;异轨：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;读操作RDMA Read：客户端从服务端读取数据，服务端被动响应，延迟较低&lt;/li&gt;
+&lt;li&gt;写操作RDMA Write：客户端将数据直接写入服务端内存，常用于大数据吞吐&lt;/li&gt;
+&lt;li&gt;发送操作RDMA Send：传统网络传输&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;3测试前准备&#34;&gt;3.测试前准备
+&lt;/h2&gt;&lt;p&gt;本次测试为单机，选择2个卡打流&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;网卡信息，NPU机器除了业务口的网卡，其他的只能通过hccn_tool操作
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;for i in {0..15}; do    echo &amp;quot;=== Device $i ===&amp;quot;    hccn_tool -i $i -link -g 2&amp;gt;/dev/null    hccn_tool -i $i -ip -g 2&amp;gt;/dev/null    echo done # 一共有16张HCCN网卡&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;网卡节点信息
+&lt;ol&gt;
+&lt;li&gt;执行下面这个命令，system name tlv相同的两个设备是同轨，不同的是异轨&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;#!/bin/bash for i in {0..15}; do    echo &amp;quot;Interface $i:&amp;quot;    hccn_tool -i $i -lldp -g | grep &amp;quot;System Name TLV&amp;quot; -A 1    echo done # 输出如下： Interface 0: System Name TLV        SH-YS2-M203-J12U28-H3CS9825-G0-04001 Interface 1: System Name TLV        SH-YS2-M203-J12U33-H3CS9825-G0-03001 Interface 2: System Name TLV        SH-YS2-M203-J12U43-H3CS9825-G0-01001 # .....省略 Interface 8: System Name TLV        SH-YS2-M203-J12U33-H3CS9825-G0-03001 Interface 9: System Name TLV        SH-YS2-M203-J12U28-H3CS9825-G0-04001&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;网卡IP地址
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;# hccn_tool -i id -ip -g root@infra-gpu-npu-011:~# hccn_tool -i 0 -ip -g ipaddr:10.250.45.69 netmask:255.255.255.0 root@infra-gpu-npu-011:~# hccn_tool -i 1 -ip -g ipaddr:10.250.30.30 netmask:255.255.255.0 root@infra-gpu-npu-011:~# hccn_tool -i 8 -ip -g ipaddr:10.250.45.28 netmask:255.255.255.0&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;4测试步骤&#34;&gt;4.测试步骤
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;在接收端执行&lt;strong&gt;hccn_tool -i id -roce_test type [-d %s] [-s %d] [-a] [-b] [-f %d] [-D %d] [-l %d] [-m %d] [-ib %d] [-p %d] [-q %d] [-Q %d] [-t %d] [-u %d] [-V] [-x %d][-n %d] [-tclass %d] -tcp&lt;/strong&gt;命令，进入等待连接状态&lt;/li&gt;
+&lt;li&gt;在发送端执行&lt;strong&gt;hccn_tool -i id -roce_test type [-d %s] [-s %d] [-a] [-b] [-f %d] [-D %d] [-l %d] [-m %d] [-ib %d] [-p %d] [-q %d] [-Q %d] [-t %d] [-u %d] [-V] [-x %d][-n %d] [-tclass %d] address ipaddr -tcp&lt;/strong&gt;命令&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;注意：需要接收端先发出命令，发送端后发出命令，否则会连接失败，上述命令【】中参数为可选，其余为必选&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;同轨发送操作带宽测试&#34;&gt;同轨发送操作带宽测试
+&lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;34
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;35
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;36
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;37
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;38
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;39
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;40
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;41
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;42
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;43
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;44
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;45
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;46
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;47
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;48
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;49
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;50
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;51
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;52
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;53
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;54
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;55
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;56
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;57
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;58
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;59
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;60
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;61
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;62
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;63
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;64
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;65
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;66
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;67
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;68
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;69
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 接收端 device 9&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@infra-gpu-npu-011: hccn_tool -i &lt;span class=&#34;m&#34;&gt;9&lt;/span&gt; -roce_test ib_send_bw -s &lt;span class=&#34;m&#34;&gt;2097152&lt;/span&gt; -n
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; &lt;span class=&#34;m&#34;&gt;1000&lt;/span&gt; -tclass  &lt;span class=&#34;m&#34;&gt;132&lt;/span&gt; -tcp
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Dsmi get perftest status end. &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Dsmi start roce perftest end. &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;out&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Dsmi get perftest status end. &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;2&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;roce_report:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; new post send flow is not supported, falling back to ibv_post_send
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;************************************
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;* Waiting &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; client to connect... *
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;************************************
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...   &lt;span class=&#34;c1&#34;&gt;# 等待发送端&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 发送端 device 0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@infra-gpu-npu-011:~# hccn_tool -i &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; -roce_test ib_send_bw -s &lt;span class=&#34;m&#34;&gt;2097152&lt;/span&gt; -n
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; &lt;span class=&#34;m&#34;&gt;1000&lt;/span&gt; -tclass &lt;span class=&#34;m&#34;&gt;132&lt;/span&gt; address 10.250.45.28 -tcp
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Dsmi get perftest status end. &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Dsmi start roce perftest end. &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;out&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Dsmi get perftest status end. &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;roce_report:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; new post send flow is not supported, falling back to ibv_post_send
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Send BW Test
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Dual-port       : OFF          Device         : hns_0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Number of qps   : &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;            Transport &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt; : IB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Connection &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt; : RC           Using SRQ      : OFF
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; TX depth        : &lt;span class=&#34;m&#34;&gt;128&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; CQ Moderation   : &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Mtu             : 4096&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;B&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Link &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;       : Ethernet
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; GID index       : &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Max inline data : 0&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;B&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; rdma_cm QPs     : OFF
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Data ex. method : Ethernet
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; &lt;span class=&#34;nb&#34;&gt;local&lt;/span&gt; address: LID &lt;span class=&#34;m&#34;&gt;0000&lt;/span&gt; QPN 0x004a PSN 0xe03644
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; GID: 00:00:00:00:00:00:00:00:00:00:255:255:10:250:45:69
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; remote address: LID &lt;span class=&#34;m&#34;&gt;0000&lt;/span&gt; QPN 0x0012 PSN 0x5785c2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; GID: 00:00:00:00:00:00:00:00:00:00:255:255:10:250:30:26
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; &lt;span class=&#34;c1&#34;&gt;#bytes       #iterations        BW peak[MB/sec]            BW average[MB/sec]          MsgRate[Mpps]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; &lt;span class=&#34;m&#34;&gt;2097152&lt;/span&gt;      &lt;span class=&#34;m&#34;&gt;1000&lt;/span&gt;               23370.21                   23365.53                    0.011683
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 接收端&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                    Send BW Test
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Dual-port       : OFF          Device         : hns_0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Number of qps   : &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;            Transport &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt; : IB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Connection &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt; : RC           Using SRQ      : OFF
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; RX depth        : &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; CQ Moderation   : &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Mtu             : 4096&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;B&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Link &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;       : Ethernet
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; GID index       : &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Max inline data : 0&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;B&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; rdma_cm QPs     : OFF
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; Data ex. method : Ethernet
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; &lt;span class=&#34;nb&#34;&gt;local&lt;/span&gt; address: LID &lt;span class=&#34;m&#34;&gt;0000&lt;/span&gt; QPN 0x0012 PSN 0x5785c2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; GID: 00:00:00:00:00:00:00:00:00:00:255:255:10:250:30:26
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; remote address: LID &lt;span class=&#34;m&#34;&gt;0000&lt;/span&gt; QPN 0x004a PSN 0xe03644
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; GID: 00:00:00:00:00:00:00:00:00:00:255:255:10:250:45:69
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; &lt;span class=&#34;c1&#34;&gt;#bytes       #iterations        BW peak[MB/sec]            BW average[MB/sec]          MsgRate[Mpps]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; &lt;span class=&#34;m&#34;&gt;2097152&lt;/span&gt;      &lt;span class=&#34;m&#34;&gt;1000&lt;/span&gt;               0.00                       23394.57                    0.011697
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;成功则打印带宽值。&lt;/li&gt;
+&lt;li&gt;异常可通过以下命令主动终止-i对应device侧OS的roce_test进程。
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;hccn_tool -i 0 -roce_test reset&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;若需更改发送操作为 读/写 ，更改带宽测试为时延测试，只需更改roce_test;若需更改同轨为异轨，只需更改设备id和接收端IP。具体步骤与上述类似，此处不再赘述。&lt;/p&gt;
+&lt;p&gt;附上四份表格以供参考&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;同轨读操作带宽测试&lt;/th&gt;
+          &lt;th&gt;同轨写操作带宽测试&lt;/th&gt;
+          &lt;th&gt;同轨发送操作带宽测试&lt;/th&gt;
+          &lt;th&gt;异轨读操作带宽测试&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;bytes&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;iterations&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;BW peak[MB/sec]&lt;/td&gt;
+          &lt;td&gt;23375.37&lt;/td&gt;
+          &lt;td&gt;23375.37&lt;/td&gt;
+          &lt;td&gt;23375.31&lt;/td&gt;
+          &lt;td&gt;23375.31&lt;/td&gt;
+          &lt;td&gt;23364.33&lt;/td&gt;
+          &lt;td&gt;0&lt;/td&gt;
+          &lt;td&gt;23364.42&lt;/td&gt;
+          &lt;td&gt;23364.42&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;BW average[MB/sec]&lt;/td&gt;
+          &lt;td&gt;23366.23&lt;/td&gt;
+          &lt;td&gt;23366.23&lt;/td&gt;
+          &lt;td&gt;23368.05&lt;/td&gt;
+          &lt;td&gt;23368.53&lt;/td&gt;
+          &lt;td&gt;23363.58&lt;/td&gt;
+          &lt;td&gt;23394.90&lt;/td&gt;
+          &lt;td&gt;23364.15&lt;/td&gt;
+          &lt;td&gt;23364.15&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;MsgRate[Mpps]&lt;/td&gt;
+          &lt;td&gt;0.023366&lt;/td&gt;
+          &lt;td&gt;0.023366&lt;/td&gt;
+          &lt;td&gt;0.023369&lt;/td&gt;
+          &lt;td&gt;0.023369&lt;/td&gt;
+          &lt;td&gt;0.023364&lt;/td&gt;
+          &lt;td&gt;0.023395&lt;/td&gt;
+          &lt;td&gt;0.023364&lt;/td&gt;
+          &lt;td&gt;0.023364&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;异轨读操作带宽测试&lt;/th&gt;
+          &lt;th&gt;异轨写操作带宽测试&lt;/th&gt;
+          &lt;th&gt;异轨发送操作带宽测试&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;bytes&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+          &lt;td&gt;1048576&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;iterations&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+          &lt;td&gt;1000&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;BW peak[MB/sec]&lt;/td&gt;
+          &lt;td&gt;23364.42&lt;/td&gt;
+          &lt;td&gt;23364.42&lt;/td&gt;
+          &lt;td&gt;23364.37&lt;/td&gt;
+          &lt;td&gt;23364.37&lt;/td&gt;
+          &lt;td&gt;23353.34&lt;/td&gt;
+          &lt;td&gt;0&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;BW average[MB/sec]&lt;/td&gt;
+          &lt;td&gt;23364.15&lt;/td&gt;
+          &lt;td&gt;23364.15&lt;/td&gt;
+          &lt;td&gt;23363.87&lt;/td&gt;
+          &lt;td&gt;23363.87&lt;/td&gt;
+          &lt;td&gt;23350.1&lt;/td&gt;
+          &lt;td&gt;23390.38&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;MsgRate[Mpps]&lt;/td&gt;
+          &lt;td&gt;0.023364&lt;/td&gt;
+          &lt;td&gt;0.023364&lt;/td&gt;
+          &lt;td&gt;0.023364&lt;/td&gt;
+          &lt;td&gt;0.023364&lt;/td&gt;
+          &lt;td&gt;0.02335&lt;/td&gt;
+          &lt;td&gt;0.02339&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;BW average【MB/sec】基本稳定在23360MB/sec&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;同轨写操作时延测试&lt;/th&gt;
+          &lt;th&gt;同轨发送操作时延测试&lt;/th&gt;
+          &lt;th&gt;同轨读操作时延测试&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;t_min[usec]&lt;/td&gt;
+          &lt;td&gt;46.08&lt;/td&gt;
+          &lt;td&gt;46.08&lt;/td&gt;
+          &lt;td&gt;46.60&lt;/td&gt;
+          &lt;td&gt;48.75&lt;/td&gt;
+          &lt;td&gt;48.50&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;t_max[usec]&lt;/td&gt;
+          &lt;td&gt;131.19&lt;/td&gt;
+          &lt;td&gt;130.94&lt;/td&gt;
+          &lt;td&gt;115.95&lt;/td&gt;
+          &lt;td&gt;226.82&lt;/td&gt;
+          &lt;td&gt;109.10&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;t_typical[usec]&lt;/td&gt;
+          &lt;td&gt;46.23&lt;/td&gt;
+          &lt;td&gt;46.23&lt;/td&gt;
+          &lt;td&gt;46.81&lt;/td&gt;
+          &lt;td&gt;48.99&lt;/td&gt;
+          &lt;td&gt;48.72&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;t_avg[usec]&lt;/td&gt;
+          &lt;td&gt;46.51&lt;/td&gt;
+          &lt;td&gt;46.53&lt;/td&gt;
+          &lt;td&gt;47.10&lt;/td&gt;
+          &lt;td&gt;49.33&lt;/td&gt;
+          &lt;td&gt;48.84&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;t_stdev[usec]&lt;/td&gt;
+          &lt;td&gt;2.79&lt;/td&gt;
+          &lt;td&gt;2.83&lt;/td&gt;
+          &lt;td&gt;2.28&lt;/td&gt;
+          &lt;td&gt;4.08&lt;/td&gt;
+          &lt;td&gt;1.88&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;99% percentile[usec]&lt;/td&gt;
+          &lt;td&gt;54.20&lt;/td&gt;
+          &lt;td&gt;60.73&lt;/td&gt;
+          &lt;td&gt;56.94&lt;/td&gt;
+          &lt;td&gt;56.29&lt;/td&gt;
+          &lt;td&gt;49.42&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;99.9% percentile[usec]&lt;/td&gt;
+          &lt;td&gt;131.11&lt;/td&gt;
+          &lt;td&gt;130.94&lt;/td&gt;
+          &lt;td&gt;115.95&lt;/td&gt;
+          &lt;td&gt;226.82&lt;/td&gt;
+          &lt;td&gt;109.15&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;异轨写操作时延测试&lt;/th&gt;
+          &lt;th&gt;异轨发送操作时延测试&lt;/th&gt;
+          &lt;th&gt;异轨读操作时延测试&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+          &lt;th&gt;&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+          &lt;td&gt;发送端&lt;/td&gt;
+          &lt;td&gt;接收端&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;t_min[usec]&lt;/td&gt;
+          &lt;td&gt;50.29&lt;/td&gt;
+          &lt;td&gt;50.29&lt;/td&gt;
+          &lt;td&gt;50.85&lt;/td&gt;
+          &lt;td&gt;50.85&lt;/td&gt;
+          &lt;td&gt;56.6&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;t_max[usec]&lt;/td&gt;
+          &lt;td&gt;162.23&lt;/td&gt;
+          &lt;td&gt;161.95&lt;/td&gt;
+          &lt;td&gt;288.82&lt;/td&gt;
+          &lt;td&gt;227.79&lt;/td&gt;
+          &lt;td&gt;137.6&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;t_typical[usec]&lt;/td&gt;
+          &lt;td&gt;50.46&lt;/td&gt;
+          &lt;td&gt;50.45&lt;/td&gt;
+          &lt;td&gt;51.09&lt;/td&gt;
+          &lt;td&gt;51.11&lt;/td&gt;
+          &lt;td&gt;56.8&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;t_avg[usec]&lt;/td&gt;
+          &lt;td&gt;50.92&lt;/td&gt;
+          &lt;td&gt;50.99&lt;/td&gt;
+          &lt;td&gt;51.86&lt;/td&gt;
+          &lt;td&gt;51.69&lt;/td&gt;
+          &lt;td&gt;56.91&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;t_stdev[usec]&lt;/td&gt;
+          &lt;td&gt;4.27&lt;/td&gt;
+          &lt;td&gt;4.79&lt;/td&gt;
+          &lt;td&gt;7.41&lt;/td&gt;
+          &lt;td&gt;4.68&lt;/td&gt;
+          &lt;td&gt;1.08&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;99% percentile[usec]&lt;/td&gt;
+          &lt;td&gt;68.4&lt;/td&gt;
+          &lt;td&gt;69.72&lt;/td&gt;
+          &lt;td&gt;84.39&lt;/td&gt;
+          &lt;td&gt;66.39&lt;/td&gt;
+          &lt;td&gt;57.36&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;99.9% percentile[usec]&lt;/td&gt;
+          &lt;td&gt;162.23&lt;/td&gt;
+          &lt;td&gt;161.95&lt;/td&gt;
+          &lt;td&gt;288.82&lt;/td&gt;
+          &lt;td&gt;227.79&lt;/td&gt;
+          &lt;td&gt;137.6&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;可以看到同轨时延相比于异轨时延明显降低了，同轨带宽略高于异轨&lt;/p&gt;
+&lt;h3 id=&#34;打印信息分析&#34;&gt;打印信息分析
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;BW average[MB/sec]：带宽平均值&lt;/li&gt;
+&lt;li&gt;MsgRate (Mpps) = 每秒发送的消息条数,百万数据包/s,带宽 = MsgRate × 消息大小 × 8&lt;/li&gt;
+&lt;li&gt;t_stdev[usec]：标准差，3.42 微秒，说明波动比较小&lt;/li&gt;
+&lt;li&gt;percentile[usec]：传输时间的百分位数，99.9% percentile[usec]：144.28,99.9% 的请求延迟小于144.28微秒&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;必选参数解析&#34;&gt;必选参数解析
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;-i id：指定设备ID&lt;/li&gt;
+&lt;li&gt;-roce_test type：
+&lt;ul&gt;
+&lt;li&gt;ib_read_bw：读操作带宽测试&lt;/li&gt;
+&lt;li&gt;ib_write_bw：写操作带宽测试&lt;/li&gt;
+&lt;li&gt;ib_send_bw：发送操作带宽测试&lt;/li&gt;
+&lt;li&gt;ib_read_lat：读操作时延测试&lt;/li&gt;
+&lt;li&gt;ib_write_lat：写操作时延测试&lt;/li&gt;
+&lt;li&gt;ib_send_lat：发送操作时延测试&lt;/li&gt;
+&lt;li&gt;reset：复位指令，终止对应device OS的所有roce_test进程。&lt;strong&gt;Ctrl + C 不能终止&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;address ipaddr：接收端网卡设备IP地址，用于给发送端建立连接&lt;/li&gt;
+&lt;li&gt;-tcp：指定建链方式为tcp建链&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;非必选参数解析&#34;&gt;非必选参数解析
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;-s：指定msg包的大小，取值范围：1~874736000。单位：B。不加该参数默认值为65536
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;root@infra-gpu-npu-011:~# hccn_tool -i 8 -roce_test ib_send_bw -s 1048576 -n 1000 -tclass  132 -tcp  #bytes       #iterations        BW peak[MB/sec]            BW average[MB/sec]          MsgRate[Mpps] 1048576      1000               0.00                       23392.64                    0.023393   root@infra-gpu-npu-011:~# hccn_tool -i 8 -roce_test ib_send_bw -s 2097152 -n 1000 -tclass  132 -tcp  #bytes       #iterations        BW peak[MB/sec]            BW average[MB/sec]          MsgRate[Mpps] 2097152      1000               0.00                       23394.57                    0.011697&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;-s:1048576, 每条消息大小 1MB-&amp;gt;2097152, 每条消息大小 2MB; MsgRate[Mpps]:0.23393-&amp;gt;0.11697&lt;/p&gt;
+&lt;p&gt;也就是说：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;2MB 消息：消息大，但每秒能处理的条数少 → MsgRate 低&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;1MB 消息：消息小，处理条数多 → MsgRate 高。但是带宽未必更高，因为虽然消息数多了，单条消息小了，总吞吐量可能差不多，甚至更低&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;-n：指定迭代次数&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
         <title>kubernetes秋招面试题准备</title>
         <link>https://Logic0528.github.io/p/kubernetes%E7%A7%8B%E6%8B%9B%E9%9D%A2%E8%AF%95%E9%A2%98%E5%87%86%E5%A4%87/</link>
         <pubDate>Tue, 12 Aug 2025 15:00:19 +0800</pubDate>
