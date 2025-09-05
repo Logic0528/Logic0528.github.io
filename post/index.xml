@@ -13,14 +13,13 @@
         <pubDate>Thu, 04 Sep 2025 11:00:00 +0800</pubDate>
         
         <guid>https://Logic0528.github.io/p/roce%E5%B8%A6%E5%AE%BD%E6%97%B6%E5%BB%B6%E6%B5%8B%E8%AF%95/</guid>
-        <description>&lt;h1 id=&#34;roce带宽时延测试&#34;&gt;RoCE带宽时延测试
-&lt;/h1&gt;&lt;h2 id=&#34;1测试目的&#34;&gt;1.测试目的
+        <description>&lt;h2 id=&#34;测试目的&#34;&gt;测试目的
 &lt;/h2&gt;&lt;p&gt;评估 RoCE网卡接口在 RDMA 场景下的性能表现，主要性能指标包括：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;带宽（Bandwidth）：评估网卡最大吞吐能力&lt;/li&gt;
 &lt;li&gt;时延（Latency）：衡量数据包往返所需时间&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;2相关名词概念解释&#34;&gt;2.相关名词概念解释
+&lt;h2 id=&#34;相关名词概念解释&#34;&gt;相关名词概念解释
 &lt;/h2&gt;&lt;ol&gt;
 &lt;li&gt;RoCE:RDMA over Converged Ethernet,RDMA技术在以太网上的实现&lt;/li&gt;
 &lt;li&gt;RDMA:RemoteDirect Memory Access，远程内存直接访问
@@ -38,17 +37,11 @@
 &gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/li&gt;
-&lt;li&gt;同轨/异轨：
-&lt;ol&gt;
-&lt;li&gt;同轨：&lt;/li&gt;
-&lt;li&gt;异轨：&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
 &lt;li&gt;读操作RDMA Read：客户端从服务端读取数据，服务端被动响应，延迟较低&lt;/li&gt;
 &lt;li&gt;写操作RDMA Write：客户端将数据直接写入服务端内存，常用于大数据吞吐&lt;/li&gt;
 &lt;li&gt;发送操作RDMA Send：传统网络传输&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2 id=&#34;3测试前准备&#34;&gt;3.测试前准备
+&lt;h2 id=&#34;测试前准备&#34;&gt;测试前准备
 &lt;/h2&gt;&lt;p&gt;本次测试为单机，选择2个卡打流&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;网卡信息，NPU机器除了业务口的网卡，其他的只能通过hccn_tool操作
@@ -68,7 +61,7 @@
 &lt;/ol&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2 id=&#34;4测试步骤&#34;&gt;4.测试步骤
+&lt;h2 id=&#34;测试步骤&#34;&gt;测试步骤
 &lt;/h2&gt;&lt;ol&gt;
 &lt;li&gt;在接收端执行&lt;strong&gt;hccn_tool -i id -roce_test type [-d %s] [-s %d] [-a] [-b] [-f %d] [-D %d] [-l %d] [-m %d] [-ib %d] [-p %d] [-q %d] [-Q %d] [-t %d] [-u %d] [-V] [-x %d][-n %d] [-tclass %d] -tcp&lt;/strong&gt;命令，进入等待连接状态&lt;/li&gt;
 &lt;li&gt;在发送端执行&lt;strong&gt;hccn_tool -i id -roce_test type [-d %s] [-s %d] [-a] [-b] [-f %d] [-D %d] [-l %d] [-m %d] [-ib %d] [-p %d] [-q %d] [-Q %d] [-t %d] [-u %d] [-V] [-x %d][-n %d] [-tclass %d] address ipaddr -tcp&lt;/strong&gt;命令&lt;/li&gt;
