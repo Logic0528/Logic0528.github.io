@@ -45,21 +45,32 @@
 &lt;/h2&gt;&lt;p&gt;本次测试为单机，选择2个卡打流&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;网卡信息，NPU机器除了业务口的网卡，其他的只能通过hccn_tool操作
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;for i in {0..15}; do    echo &amp;quot;=== Device $i ===&amp;quot;    hccn_tool -i $i -link -g 2&amp;gt;/dev/null    hccn_tool -i $i -ip -g 2&amp;gt;/dev/null    echo done # 一共有16张HCCN网卡&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; i in &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;0..15&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;do&lt;/span&gt;    &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;=== Device &lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$i&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; ===&amp;#34;&lt;/span&gt;    hccn_tool -i &lt;span class=&#34;nv&#34;&gt;$i&lt;/span&gt; -link -g 2&amp;gt;/dev/null    hccn_tool -i &lt;span class=&#34;nv&#34;&gt;$i&lt;/span&gt; -ip -g 2&amp;gt;/dev/null    &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;done&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;# 一共有16张HCCN网卡&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
 &lt;li&gt;网卡节点信息
 &lt;ol&gt;
 &lt;li&gt;执行下面这个命令，system name tlv相同的两个设备是同轨，不同的是异轨&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;#!/bin/bash for i in {0..15}; do    echo &amp;quot;Interface $i:&amp;quot;    hccn_tool -i $i -lldp -g | grep &amp;quot;System Name TLV&amp;quot; -A 1    echo done # 输出如下： Interface 0: System Name TLV        SH-YS2-M203-J12U28-H3CS9825-G0-04001 Interface 1: System Name TLV        SH-YS2-M203-J12U33-H3CS9825-G0-03001 Interface 2: System Name TLV        SH-YS2-M203-J12U43-H3CS9825-G0-01001 # .....省略 Interface 8: System Name TLV        SH-YS2-M203-J12U33-H3CS9825-G0-03001 Interface 9: System Name TLV        SH-YS2-M203-J12U28-H3CS9825-G0-04001&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/bin/bash for i in {0..15}; do    echo &amp;#34;Interface $i:&amp;#34;    hccn_tool -i $i -lldp -g | grep &amp;#34;System Name TLV&amp;#34; -A 1    echo done # 输出如下： Interface 0: System Name TLV        SH-YS2-M203-J12U28-H3CS9825-G0-04001 Interface 1: System Name TLV        SH-YS2-M203-J12U33-H3CS9825-G0-03001 Interface 2: System Name TLV        SH-YS2-M203-J12U43-H3CS9825-G0-01001 # .....省略 Interface 8: System Name TLV        SH-YS2-M203-J12U33-H3CS9825-G0-03001 Interface 9: System Name TLV        SH-YS2-M203-J12U28-H3CS9825-G0-04001
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/li&gt;
 &lt;li&gt;网卡IP地址
-&lt;ol&gt;
-&lt;li&gt;&lt;code&gt;# hccn_tool -i id -ip -g root@infra-gpu-npu-011:~# hccn_tool -i 0 -ip -g ipaddr:10.250.45.69 netmask:255.255.255.0 root@infra-gpu-npu-011:~# hccn_tool -i 1 -ip -g ipaddr:10.250.30.30 netmask:255.255.255.0 root@infra-gpu-npu-011:~# hccn_tool -i 8 -ip -g ipaddr:10.250.45.28 netmask:255.255.255.0&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
+&lt;code&gt;bash# hccn_tool -i id -ip -g root@infra-gpu-npu-011:~# hccn_tool -i 0 -ip -g ipaddr:10.250.45.69 netmask:255.255.255.0 root@infra-gpu-npu-011:~# hccn_tool -i 1 -ip -g ipaddr:10.250.30.30 netmask:255.255.255.0 root@infra-gpu-npu-011:~# hccn_tool -i 8 -ip -g ipaddr:10.250.45.28 netmask:255.255.255.0&lt;/code&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;测试步骤&#34;&gt;测试步骤
 &lt;/h2&gt;&lt;ol&gt;

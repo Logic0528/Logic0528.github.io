@@ -398,21 +398,32 @@
 </h2><p>本次测试为单机，选择2个卡打流</p>
 <ol>
 <li>网卡信息，NPU机器除了业务口的网卡，其他的只能通过hccn_tool操作
-<ol>
-<li><code>for i in {0..15}; do    echo &quot;=== Device $i ===&quot;    hccn_tool -i $i -link -g 2&gt;/dev/null    hccn_tool -i $i -ip -g 2&gt;/dev/null    echo done # 一共有16张HCCN网卡</code></li>
-</ol>
-</li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> i in <span class="o">{</span>0..15<span class="o">}</span><span class="p">;</span> <span class="k">do</span>    <span class="nb">echo</span> <span class="s2">&#34;=== Device </span><span class="nv">$i</span><span class="s2"> ===&#34;</span>    hccn_tool -i <span class="nv">$i</span> -link -g 2&gt;/dev/null    hccn_tool -i <span class="nv">$i</span> -ip -g 2&gt;/dev/null    <span class="nb">echo</span> <span class="k">done</span> <span class="c1"># 一共有16张HCCN网卡</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
 <li>网卡节点信息
 <ol>
 <li>执行下面这个命令，system name tlv相同的两个设备是同轨，不同的是异轨</li>
-<li><code>#!/bin/bash for i in {0..15}; do    echo &quot;Interface $i:&quot;    hccn_tool -i $i -lldp -g | grep &quot;System Name TLV&quot; -A 1    echo done # 输出如下： Interface 0: System Name TLV        SH-YS2-M203-J12U28-H3CS9825-G0-04001 Interface 1: System Name TLV        SH-YS2-M203-J12U33-H3CS9825-G0-03001 Interface 2: System Name TLV        SH-YS2-M203-J12U43-H3CS9825-G0-01001 # .....省略 Interface 8: System Name TLV        SH-YS2-M203-J12U33-H3CS9825-G0-03001 Interface 9: System Name TLV        SH-YS2-M203-J12U28-H3CS9825-G0-04001</code></li>
+<li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/bash for i in {0..15}; do    echo &#34;Interface $i:&#34;    hccn_tool -i $i -lldp -g | grep &#34;System Name TLV&#34; -A 1    echo done # 输出如下： Interface 0: System Name TLV        SH-YS2-M203-J12U28-H3CS9825-G0-04001 Interface 1: System Name TLV        SH-YS2-M203-J12U33-H3CS9825-G0-03001 Interface 2: System Name TLV        SH-YS2-M203-J12U43-H3CS9825-G0-01001 # .....省略 Interface 8: System Name TLV        SH-YS2-M203-J12U33-H3CS9825-G0-03001 Interface 9: System Name TLV        SH-YS2-M203-J12U28-H3CS9825-G0-04001
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div></li>
 </ol>
 </li>
 <li>网卡IP地址
-<ol>
-<li><code># hccn_tool -i id -ip -g root@infra-gpu-npu-011:~# hccn_tool -i 0 -ip -g ipaddr:10.250.45.69 netmask:255.255.255.0 root@infra-gpu-npu-011:~# hccn_tool -i 1 -ip -g ipaddr:10.250.30.30 netmask:255.255.255.0 root@infra-gpu-npu-011:~# hccn_tool -i 8 -ip -g ipaddr:10.250.45.28 netmask:255.255.255.0</code></li>
-</ol>
-</li>
+<code>bash# hccn_tool -i id -ip -g root@infra-gpu-npu-011:~# hccn_tool -i 0 -ip -g ipaddr:10.250.45.69 netmask:255.255.255.0 root@infra-gpu-npu-011:~# hccn_tool -i 1 -ip -g ipaddr:10.250.30.30 netmask:255.255.255.0 root@infra-gpu-npu-011:~# hccn_tool -i 8 -ip -g ipaddr:10.250.45.28 netmask:255.255.255.0</code></li>
 </ol>
 <h2 id="测试步骤">测试步骤
 </h2><ol>
