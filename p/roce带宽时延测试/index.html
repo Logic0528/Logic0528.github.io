@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Logic0528.github.io/p/roce%E5%B8%A6%E5%AE%BD%E6%97%B6%E5%BB%B6%E6%B5%8B%E8%AF%95/'>
 
-<link rel="stylesheet" href="/scss/style.min.663803bebe609202d5b39d848f2d7c2dc8b598a2d879efa079fa88893d29c49c.css"><meta property='og:title' content="RoCE带宽时延测试">
+<link rel="stylesheet" href="/scss/style.min.6a692fd055deae459f2a9767f57f3855ba80cafd5041317f24f7360f6ca47cdf.css"><meta property='og:title' content="RoCE带宽时延测试">
 <meta property='og:description' content="测试目的 评估 RoCE网卡接口在 RDMA 场景下的性能表现，主要性能指标包括：\n带宽（Bandwidth）：评估网卡最大吞吐能力 时延（Latency）：衡量数据包往返所需时间 相关名词概念解释 RoCE:RDMA over Converged Ethernet,RDMA技术在以太网上的实现 RDMA:RemoteDirect Memory Access，远程内存直接访问 面对高性能计算、大数据分析等IO高并发、低时延应用，现有TCP/IP软硬件架构不能满足应用的需求，这主要体现在传统的TCP/IP网络通信是通过内核发送消息，这种通信方式存在很高的数据移动和数据复制的开销。RDMA就是为了解决网络传输中服务器端数据处理的延迟而产生的。如下图，RDMA技术能直接通过网络接口访问内存数据，无需操作系统内核的介入。这允许高吞吐、低延迟的网络通信，尤其适合在大规模并行计算机集群中使用 读操作RDMA Read：客户端从服务端读取数据，服务端被动响应，延迟较低 写操作RDMA Write：客户端将数据直接写入服务端内存，常用于大数据吞吐 发送操作RDMA Send：传统网络传输 测试前准备 本次测试为单机，选择2个卡打流\n">
 <meta property='og:url' content='https://Logic0528.github.io/p/roce%E5%B8%A6%E5%AE%BD%E6%97%B6%E5%BB%B6%E6%B5%8B%E8%AF%95/'>
 <meta property='og:site_name' content='Logic'>
