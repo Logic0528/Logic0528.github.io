@@ -370,7 +370,7 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">hccn_tool -i <span class="m">0</span> -lldp -g <span class="p">|</span> grep <span class="s2">&#34;System Name TLV&#34;</span> -A <span class="m">1</span>
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> i in <span class="o">{</span>0..15<span class="o">}</span><span class="p">;</span><span class="k">do</span> hccn_tool -i <span class="nv">$i</span> -lldp -g <span class="p">|</span> grep <span class="s2">&#34;System Name TLV&#34;</span> -A 1<span class="p">;</span><span class="k">done</span>
 </span></span></code></pre></td></tr></table>
 </div>
 </div></li>
